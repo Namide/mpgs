@@ -30,16 +30,10 @@ wss.on('connection', function connection(ws) {
 
 	client -> server
 	{
-		to: [server, chan, user] 
-		data
-			server :
-				{ cmd, data }
-				
-			chan :
-				{ msg }
-			
-			user :
-				{ name, msg }
+		to: {type:String: server / chan / user, name(chan, user):String} 
+		"server" : { "cmd":string, "data":Object } ,
+		"chan":string ,
+		"user" : { "name":string, "msg":string } ,
 	}
 
 	server -> client
@@ -48,7 +42,8 @@ wss.on('connection', function connection(ws) {
 		data
 			msg
 				{
-					from: 
+					from: server 
+					type: error / 
 				}
 			
 			chanListName
