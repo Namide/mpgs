@@ -1,0 +1,7 @@
+{
+	
+	"host":"localhost",
+	"path":"/mpgs",
+	"port":8080
+	
+}

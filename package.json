@@ -1,0 +1,21 @@
+{
+	"name": "mpgs",
+	"version": "0.1.0",
+	"description": "A NodeJs server for WebSocket chats or minigames",
+	"main": "mpgs.js",
+	"keywords": [
+		"server",
+		"websocket",
+		"ws",
+		"chat",
+		"game"
+	  ],
+	"author": {
+		"name": "Damien Doussaud",
+		"url": "http://namide.com/"
+	},
+	"license": "MIT",
+	"dependencies": {
+		"ws": "^1.0.1"
+	}
+}
