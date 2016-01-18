@@ -17,6 +17,14 @@
 			
 			var mpgc = new MpgClient(uri);
 			
+			output = document.getElementById("output");
+			mpgc.onLog = function writeToScreen(message)
+			{
+				var pre = document.createElement("p");
+				pre.style.wordWrap = "break-word";
+				pre.innerHTML = message;
+				output.appendChild(pre);
+			}
 			
 			/*var uri = "ws://localhost:8080/mpgs";//"ws://echo.websocket.org/";
 			var output;
