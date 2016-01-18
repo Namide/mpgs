@@ -30,34 +30,48 @@ wss.on('connection', function connection(ws) {
 
 	client -> server
 	{
-		to: {type:String: server / chan / user, name(chan, user):String} 
-		"server" : { "cmd":string, "data":Object } ,
-		"chan":string ,
-		"user" : { "name":string, "msg":string } ,
+		server : { cmd:$String, data:Object } ,
+		userMsg : { name:$UserName, msg:$String } ,
+		chanMsg:$String,
+		chanEvt : { $datas }
+		chanData : { $datas }
+		userData : { name:$UserName, data: { $datas } } ,
+		userEvt : { name:$UserName, evt: { $datas } }
+		
 	}
 
 	server -> client
 	{
-		type: serverMsg, chanMsg, userMsg, chanListName, chanListData, userListName, userlistData
-		data
-			msg
-				{
-					from: server 
-					type: error / 
-				}
-			
-			chanListName
-				[name, ...]
-				
-			chanListData
-				[{name, userLength, data}, ...]
-			
-			userlistName
-				[name, ...]
-			
-			userlistData
-				[{name, role, data}, ...]
+		msg
+			{
+				type: server / chan / user
+				from: 
+				?to: 
+				msg: 
+			}
 		
+		list
+			{
+				type: chan / user
+				list: []
+					// [ "Jean", "Nicolas" ... ]
+					// [ {name:"Jean", role:0}, {name:"Nicolas", role:1, x:25, y:65} ]
+			}
+		
+		evt
+			{
+				type: chan / user
+				name:
+				datas: { ... }
+			}
+		
+		data
+			{
+				type: chan / user
+				name:
+				datas: { ... }
+			}
+	
 	}
 
 */
