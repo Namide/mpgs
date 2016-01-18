@@ -62,14 +62,14 @@ wss.on('connection', function connection(ws) {
 			{
 				type: chan / user
 				name:
-				datas: { ... }
+				data: { ... }
 			}
 		
 		data
 			{
 				type: chan / user
 				name:
-				datas: { ... }
+				data: { ... }
 			}
 	
 	}

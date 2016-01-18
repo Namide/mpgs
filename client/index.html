@@ -3,7 +3,7 @@
 	<head>
 		<title>Client</title>
 		<meta charset="utf-8">
-		<script type="text/javascript" src="mpgsClient.js"></script>
+		<script type="text/javascript" src="mpgClient.js"></script>
 	</head>
 	<body>
 		
@@ -12,7 +12,13 @@
 	
 		<script language="javascript" type="text/javascript">
 			
-			var uri = "ws://localhost:8080/mpgs";//"ws://echo.websocket.org/";
+			
+			var uri = "ws://localhost:8080/mpgs";
+			
+			var mpgc = new MpgClient(uri);
+			
+			
+			/*var uri = "ws://localhost:8080/mpgs";//"ws://echo.websocket.org/";
 			var output;
 
 			function init()
@@ -62,7 +68,7 @@
 				output.appendChild(pre);
 			}
 
-			window.addEventListener("load", init, false);			
+			window.addEventListener("load", init, false);	*/		
 			
 			
 			

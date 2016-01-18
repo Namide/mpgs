@@ -1,4 +1,5 @@
-'use strict';
+// 'use strict';
+	
 
 /*!
  * mpgs
@@ -7,12 +8,12 @@
  */
 
 function MpgUser() {
-
+	
 	this.name;
 	this.role;
 	this.chan;
 	
-	this.data = {};	
+	this.data = { };
 }
 
 function MpgChan() {
@@ -41,14 +42,19 @@ function MpgClient(URI) {
 
 MpgClient.prototype.init = function() {
 	
-	this.websocket = new WebSocket(uri);
-	this.websocket.onopen = function(evt) { this.onLog("socket open"); };
-	this.websocket.onclose = function(evt) { this.onLog("socket closed"); };
-	this.websocket.onmessage = this.msg;
-	this.websocket.onerror = function(evt) { this.onLog("error: " + evt.data); };
+	var mpgClient = this;
 	
-	writeToScreen("CONNECTED");
-	doSend("WebSocket rocks");
+	this.websocket = new WebSocket(uri);
+	
+	this.websocket.onopen = function(evt) { mpgClient.onLog("socket open"); };
+	this.websocket.onclose = function(evt) { mpgClient.onLog("socket closed"); };
+	this.websocket.onmessage = function(evt) { mpgClient._msg(evt); };
+	this.websocket.onerror = function(evt) { mpgClient.onLog("error: " + evt.data); };
+	
+	window.addEventListener("beforeunload", function(e){ mpgClient.close(); }, false);
+	
+	//writeToScreen("CONNECTED");
+	//doSend("WebSocket rocks");
 	
 	this.onLog = function(msg) {
 		console.log(msg);
@@ -66,10 +72,29 @@ MpgClient.prototype.init = function() {
 		this.onLog(msg);
 	};
 	
+	this.onListChan = function(list) {
+		this.onLog(list);
+	};
 	
+	this.onListUser = function(list) {
+		this.onLog(list);
+	};
 	
+	this.onEvtUser = function(evt, user) {
+		this.onLog(evt);
+	};
 	
+	this.onEvtChan = function(evt) {
+		this.onLog(evt);
+	};
 	
+	this.onDataUser = function(data, user) {
+		this.onLog(data);
+	};
+	
+	this.onDataChan = function(data) {
+		this.onLog(data);
+	};
 };
 
 
@@ -82,15 +107,47 @@ MpgClient.prototype.init = function() {
 */
 
 MpgClient.prototype.close = function() {
+	
 	this.websocket.close();
 };
+
+
+/*
+
+	Helpers
+
+*/
+
+MpgClient.prototype.getUser = function(name) {
+	
+	var u = this.chan.users;
+	var i = u.length;
+	while (--i > -1)
+	{
+		if (u[i].name === name)
+			return u;
+	}
+	
+	return null;
+};
+
+
+
+/*
+
+	Send messages
+
+*/
 
 MpgClient.prototype.sendMsg = function(msg, userName) {
 	
 	var data;
 	if (userName === null) {
+		
 		data = { userMsg : { chan : msg } };
+		
 	} else {
+		
 		data = { userMsg : { name: userName, msg : msg } };
 	}
 	
@@ -101,8 +158,11 @@ MpgClient.prototype.sendUserEvt = function(evtDatas, userName) {
 	
 	var data;
 	if (userName === null) {
+		
 		data = { userEvt : { name : this.me.name, evt : evtDatas } };
+		
 	} else {
+		
 		data = { userEvt : { name : userName, evt : evtDatas } };
 	}
 	
@@ -113,8 +173,11 @@ MpgClient.prototype.sendUserDatas = function(datas, userName) {
 	
 	var data;
 	if (userName === null) {
+		
 		data = { userData : { name : this.me.name, datas : datas } };
+		
 	} else {
+		
 		data = { userData : { name : userName, datas : datas } };
 	}
 	
@@ -136,13 +199,16 @@ MpgClient.prototype.sendChanDatas = function(datas) {
 
 
 
+/*
+		!!!!!!!!!!!!!!!!!!!!
 
-changeChan
-getChanList
-getUserList
-changeName
-kickUser
-
+			changeChan
+			getChanList
+			getUserList
+			changeName
+			kickUser
+			
+*/
 
 
 
@@ -153,37 +219,86 @@ kickUser
 
 */
 
-
-
-MpgClient.prototype.msg(evt)
+MpgClient.prototype._msg = function(evt)
 {
 	var msg = JSON.parse(evt.data);
 	
-	if (msg.msg !== null) {
-		switch(msg.from) {
+	
+	if (msg.msg !== undefined) {
+		var d = msg.msg;
+		switch(d.type) {
 			case "server":
-				this.onMsgServer(msg.text);			
+				this.onMsgServer(d.msg);
 				break;
 			case "chan":
-				this.onMsgChan(msg.text, msg.name);			
+				this.onMsgChan(d.msg, d.from);			
 				break;
 			case "user":
-				this.onMsgUser(msg.text, msg.name);			
+				this.onMsgUser(d.msg, d.from);			
 				break;
 			default :
-				this.onLog ("from undefined: " + msg.from);
+				//this.onLog ("msg from undefined: " + msg.type);
 		}
 	}
 	
-	if (msg.list !== null) {
+	if (msg.list !== undefined) {
+		
+		var out = [];
+		var d = msg.list;
+		var l = list.length;
+		for(var i = 0; i < l; i++) {
+		
+			out[i] = (typeof d[i] === "string") ? {name : d[i]} : d[i];
+		}
+		
+		if (d.type === "chan")
+			this.onListChan(out);
+		else if (d.type === "user")
+			this.onChanUser(out);
 		
 	}
 	
-	if (msg.evt !== null) {
+	if (msg.evt !== undefined) {
 		
+		var d = msg.evt;
+		if (d.type === "chan")
+			this.onEvtChan(d.data);
+		else if (type === "user")
+			this.onEvtChan(d.data, this.getUser(d.name));
 	}
 	
-	if (msg.data !== null) {
+	if (msg.data !== undefined) {
 		
+		var d = msg.data;
+		if (d.type === "chan") {
+			
+			var dt = d.data;
+			this._setChanData(dt);
+			this.onEvtChan(dt);
+		}
+		else if (d.type === "user") {
+			
+			var dt = d.data;
+			var u = this.getUser(d.name);
+			this._setUserData(dt, u);
+			this.onEvtChan(dt, u);
+		}			
+	}
+};
+
+MpgClient.prototype._setUserData = function(data, user) {
+	
+	for (key in data) {
+
+		user.data[key] = data[key];
+	}		
+};
+
+MpgClient.prototype._setChanData = function(data) {
+	
+		
+	for (key in data) {
+
+		this.chan.data[key] = data[key];
 	}
 };
