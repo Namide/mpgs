@@ -27,6 +27,7 @@ function MpgClient(URI) {
 
 	this.me = new MpgUser();
 	this.chan;
+	this.uri = URI;
 	
 	this.websocket;
 	
@@ -44,7 +45,7 @@ MpgClient.prototype.init = function() {
 	
 	var mpgClient = this;
 	
-	this.websocket = new WebSocket(uri);
+	this.websocket = new WebSocket(this.uri);
 	
 	this.websocket.onopen = function(evt) { mpgClient.onServerOpen(evt) };
 	this.websocket.onclose = function(evt) { mpgClient.onServerClose(evt) };
@@ -168,22 +169,22 @@ MpgClient.prototype.getUser = function(name) {
 MpgClient.prototype.sendMsg = function(msg, userName) {
 	
 	var data;
-	if (userName === null) {
+	if (userName === undefined) {
 		
-		data = { userMsg : { chan : msg } };
+		data = { chanMsg : { msg : msg } };
 		
 	} else {
 		
 		data = { userMsg : { name: userName, msg : msg } };
 	}
 	
-	websocket.send( JSON.stringify(data) );
+	this.websocket.send( JSON.stringify(data) );
 };
 
 MpgClient.prototype.sendUserEvt = function(evtDatas, userName) {
 	
 	var data;
-	if (userName === null) {
+	if (userName === undefined) {
 		
 		data = { userEvt : { name : this.me.name, evt : evtDatas } };
 		
@@ -192,13 +193,13 @@ MpgClient.prototype.sendUserEvt = function(evtDatas, userName) {
 		data = { userEvt : { name : userName, evt : evtDatas } };
 	}
 	
-	websocket.send( JSON.stringify(data) );
+	this.websocket.send( JSON.stringify(data) );
 };
 
 MpgClient.prototype.sendUserDatas = function(datas, userName) {
 	
 	var data;
-	if (userName === null) {
+	if (userName === undefined) {
 		
 		data = { userData : { name : this.me.name, datas : datas } };
 		
@@ -207,19 +208,19 @@ MpgClient.prototype.sendUserDatas = function(datas, userName) {
 		data = { userData : { name : userName, datas : datas } };
 	}
 	
-	websocket.send( JSON.stringify(data) );
+	this.websocket.send( JSON.stringify(data) );
 };
 
 MpgClient.prototype.sendChanEvt = function(evtDatas) {
 	
 	var data = { chanEvt : evtDatas };
-	websocket.send( JSON.stringify(data) );
+	this.websocket.send( JSON.stringify(data) );
 };
 
 MpgClient.prototype.sendChanDatas = function(datas) {
 	
 	var data = { chanData : datas };
-	websocket.send( JSON.stringify(data) );
+	this.websocket.send( JSON.stringify(data) );
 };
 
 

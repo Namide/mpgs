@@ -2,6 +2,12 @@
 	
 	"host":"localhost",
 	"path":"/mpgs",
-	"port":8080
+	"port":8080,
+	
+	"defaultChanName":"home",
+	"defaultUserName":"guest",
+	
+	"chanMin":1,
+	"chanMax":100
 	
 }
