@@ -73,7 +73,28 @@ wss.on('connection', function connection(ws) {
 			}
 	
 	}
-
+	
+	
+	Commands:
+	
+		set-user-name "newName"
+		set-user-chan "newChanName"
+		
+		set-chan-name "newName"
+		set-chan-pass "newPass"
+		
+		get-user-data "userName"
+		
+		get-list-user
+		get-list-user-data
+		
+		get-list-chan
+		get-list-chan-data
+		
+		get-chan-data
+		
+		kick-user "userName"
+		
 */
 
 

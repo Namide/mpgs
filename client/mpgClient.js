@@ -46,10 +46,10 @@ MpgClient.prototype.init = function() {
 	
 	this.websocket = new WebSocket(uri);
 	
-	this.websocket.onopen = function(evt) { mpgClient.onLog("socket open"); };
-	this.websocket.onclose = function(evt) { mpgClient.onLog("socket closed"); };
-	this.websocket.onmessage = function(evt) { mpgClient._msg(evt); };
-	this.websocket.onerror = function(evt) { mpgClient.onLog("error: " + evt.data); };
+	this.websocket.onopen = function(evt) { mpgClient.onServerOpen(evt) };
+	this.websocket.onclose = function(evt) { mpgClient.onServerClose(evt) };
+	this.websocket.onmessage = function(evt) { mpgClient._parse(evt); };
+	this.websocket.onerror = function(evt) { mpgClient.onServerError(evt) };
 	
 	window.addEventListener("beforeunload", function(e){ mpgClient.close(); }, false);
 	
@@ -59,6 +59,32 @@ MpgClient.prototype.init = function() {
 	this.onLog = function(msg) {
 		console.log(msg);
 	};
+	
+	/*
+	
+			CLIENT SYSTEM MESSAGES
+			
+	*/
+	
+	this.onServerOpen = function(evt) {
+		this.onLog("socket open");
+		console.log(evt);
+	};
+	
+	this.onServerClose = function(evt) {
+		this.onLog("socket closed");
+	};
+	
+	this.onServerError = function(evt) {
+		this.onLog("error: " + evt.data);
+	};
+	
+	
+	/*
+	
+			SERVER MESSAGES
+			
+	*/
 	
 	this.onMsgUser = function(msg, name) {
 		this.onLog(name + ":" + msg);
@@ -219,7 +245,7 @@ MpgClient.prototype.sendChanDatas = function(datas) {
 
 */
 
-MpgClient.prototype._msg = function(evt)
+MpgClient.prototype._parse = function(evt)
 {
 	var msg = JSON.parse(evt.data);
 	
