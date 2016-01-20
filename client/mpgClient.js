@@ -92,7 +92,10 @@ MpgClient.prototype.init = function() {
 	};
 	
 	this.onMsgChan = function(msg, name) {
-		this.onLog(name + ":" + msg);
+		if (name === undefined)
+			this.onLog(msg);
+		else
+			this.onLog(name + ":" + msg);
 	};
 	
 	this.onMsgServer = function(msg) {
@@ -171,7 +174,7 @@ MpgClient.prototype.sendMsg = function(msg, userName) {
 	var data;
 	if (userName === undefined) {
 		
-		data = { chanMsg : { msg : msg } };
+		data = { chanMsg : msg };
 		
 	} else {
 		
@@ -196,17 +199,17 @@ MpgClient.prototype.sendUserEvt = function(evtDatas, userName) {
 	this.websocket.send( JSON.stringify(data) );
 };
 
-MpgClient.prototype.sendUserDatas = function(datas, userName) {
+MpgClient.prototype.sendUserData = function(datas) {
 	
-	var data;
-	if (userName === undefined) {
+	//var data;
+	//if (userName === undefined) {
 		
-		data = { userData : { name : this.me.name, datas : datas } };
+		var data = { userData : { name : this.me.name, datas : datas } };
 		
-	} else {
+	/*} else {
 		
 		data = { userData : { name : userName, datas : datas } };
-	}
+	}*/
 	
 	this.websocket.send( JSON.stringify(data) );
 };
@@ -217,7 +220,7 @@ MpgClient.prototype.sendChanEvt = function(evtDatas) {
 	this.websocket.send( JSON.stringify(data) );
 };
 
-MpgClient.prototype.sendChanDatas = function(datas) {
+MpgClient.prototype.sendChanData = function(datas) {
 	
 	var data = { chanData : datas };
 	this.websocket.send( JSON.stringify(data) );
@@ -258,15 +261,17 @@ MpgClient.prototype.sendChanDatas = function(datas) {
 MpgClient.prototype.askChangeChan = function(chanName, chanPass) {
 	if (chanPass === undefined)
 		chanPass = "";
-	this._ask("set-user-chan", {name:chanName, "pass":chanPass});
+	//this._ask("set-user-chan", {name:chanName, "pass":chanPass});
+	this.sendUserData({chan: {name: chanName, pass: chanPass}});
 };
 
 MpgClient.prototype.askChangeUserName = function(newName) {
-	this._ask("set-user-name", newName);
+	//this._ask("set-user-name", newName);
+	this.sendUserData({name: newName});
 };
 
 MpgClient.prototype.askChangeChanName = function(newName) {
-	this._ask("set-chan-name", newName);
+	this.sendChanData({name: chanName});
 };
 
 MpgClient.prototype.askChangeChanPass = function(newPass) {
