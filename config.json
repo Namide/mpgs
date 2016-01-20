@@ -1,13 +1,29 @@
 {
-	
-	"host":"localhost",
-	"path":"/mpgs",
-	"port":8080,
-	
-	"defaultChanName":"home",
-	"defaultUserName":"guest",
-	
-	"chanMin":1,
-	"chanMax":100
-	
+
+	"host": "localhost",
+	"path": "/mpgs",
+	"port": 8080,
+
+	"startChan": {
+		"name": "home",
+		"data": {
+			"chanMin": 0,
+			"chanMax": 1000000,
+			"moderationEnabled": false
+		}
+	},
+
+	"defaultChan": {
+		"data": {
+			"chanMin": 1,
+			"chanMax": 100,
+			"moderationEnabled": true
+		}
+	},
+
+	"defaultUser": {
+		"name": "guest",
+		"data": {}
+	}
+
 }
