@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Chat</title>
+		<meta charset="utf-8">
+		<script type="text/javascript" src="jquery-2.2.0.min.js"></script>
+		<script type="text/javascript" src="mpgClient.js"></script>
+		<link rel="stylesheet" type="text/css" href="chat.css">
+	
+	</head>
+	<body>
+		
+		<div id="login-form">
+			<h1>Welcom on this t'chat</h1>
+			<form action="">
+				<input id="name" type="text" pattern="^[_A-Za-z0-9-]+$" required autofocus placeholder="Name">
+				<input type="submit" value="Ok">
+			</form>
+		</div>
+		
+		<h2>WebSocket Test</h2>
+		<div id="output"></div>
+	
+		<script language="javascript" type="text/javascript">
+			
+			var mpgc = new MpgClient("ws://localhost:8080/mpgs");
+			
+			
+			// LOGIN
+			$("#login-form").submit(function (e){
+				
+				e.preventDefault();
+				//console.log($("#name").val());
+				mpgc.askChangeUserName($("#name").val())
+				return false;
+			});
+			
+			
+			
+			
+			output = document.getElementById("output");
+			mpgc.onLog = function writeToScreen(message)
+			{
+				var pre = document.createElement("p");
+				pre.style.wordWrap = "break-word";
+				pre.innerHTML = message;
+				output.appendChild(pre);
+			}
+			
+			mpgc.onServerOpen = function() {
+				mpgc.sendMsg("youhou!");
+			}
+			
+			
+		</script>
+	</body>
+</html>

@@ -199,12 +199,12 @@ MpgClient.prototype.sendUserEvt = function(evtDatas, userName) {
 	this.websocket.send( JSON.stringify(data) );
 };
 
-MpgClient.prototype.sendUserData = function(datas) {
+MpgClient.prototype.sendUserData = function(userData) {
 	
 	//var data;
 	//if (userName === undefined) {
 		
-		var data = { userData : { name : this.me.name, datas : datas } };
+		var data = { userData : userData /*{ name : this.me.name, datas : datas }*/ };
 		
 	/*} else {
 		
