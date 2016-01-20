@@ -235,7 +235,34 @@ MpgClient.prototype.sendChanDatas = function(datas) {
 			changeName
 			kickUser
 			
+				set-user-name "newName"
+				set-user-chan "newChanName"
+
+				set-chan-name "newName"
+				set-chan-pass "newPass"
+
+				get-user-data "userName"
+
+				get-list-user
+				get-list-user-data
+
+				get-list-chan
+				get-list-chan-data
+
+				get-chan-data
+
+				kick-user "userName"
+			
 */
+
+MpgClient.prototype.changeChan = function(chanName, chanPass) {
+	
+	if (chanPass === undefined)
+		chanPass = "";
+	
+	var data = { server : { cmd: "set-user-chan", data: {} } };
+	this.websocket.send( JSON.stringify(data) );
+};
 
 
 

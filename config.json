@@ -3,27 +3,30 @@
 	"host": "localhost",
 	"path": "/mpgs",
 	"port": 8080,
+	
 
 	"startChan": {
 		"name": "home",
 		"data": {
-			"chanMin": 0,
-			"chanMax": 1000000,
+			"userMin": 0,
+			"userMax": 1000000,
 			"moderationEnabled": false
 		}
 	},
+	
 
 	"defaultChan": {
 		"data": {
-			"chanMin": 1,
-			"chanMax": 100,
+			"userMin": 1,
+			"userMax": 100,
 			"moderationEnabled": true
 		}
 	},
+	
 
 	"defaultUser": {
 		"name": "guest",
-		"data": {}
+		"data": { }
 	}
 
 }
