@@ -236,7 +236,7 @@ MpgClient.prototype.sendChanDatas = function(datas) {
 			kickUser
 			
 				set-user-name "newName"
-				set-user-chan "newChanName"
+				set-user-chan {name:"newChanName", "pass":"newChanPass"} 
 
 				set-chan-name "newName"
 				set-chan-pass "newPass"
@@ -255,15 +255,51 @@ MpgClient.prototype.sendChanDatas = function(datas) {
 			
 */
 
-MpgClient.prototype.changeChan = function(chanName, chanPass) {
-	
+MpgClient.prototype.askChangeChan = function(chanName, chanPass) {
 	if (chanPass === undefined)
 		chanPass = "";
-	
-	var data = { server : { cmd: "set-user-chan", data: {} } };
-	this.websocket.send( JSON.stringify(data) );
+	this._ask("set-user-chan", {name:chanName, "pass":chanPass});
 };
 
+MpgClient.prototype.askChangeUserName = function(newName) {
+	this._ask("set-user-name", newName);
+};
+
+MpgClient.prototype.askChangeChanName = function(newName) {
+	this._ask("set-chan-name", newName);
+};
+
+MpgClient.prototype.askChangeChanPass = function(newPass) {
+	this._ask("set-chan-pass", newPass);
+};
+
+MpgClient.prototype.askUserData = function(userName) {
+	this._ask("get-user-data", userName);
+};
+
+MpgClient.prototype.askListUser = function() {
+	this._ask("get-list-user");
+};
+
+MpgClient.prototype.askListUserData = function() {
+	this._ask("get-list-user-data");
+};
+
+MpgClient.prototype.askListChan = function() {
+	this._ask("get-list-chan");
+};
+
+MpgClient.prototype.askListChanData = function() {
+	this._ask("get-list-chan-data");
+};
+
+MpgClient.prototype.askChanData = function() {
+	this._ask("get-chan-data");
+};
+
+MpgClient.prototype.askKick = function(userName) {
+	this._ask("kick-user", userName);
+};
 
 
 
@@ -272,6 +308,14 @@ MpgClient.prototype.changeChan = function(chanName, chanPass) {
 	Private Mpg Methods
 
 */
+
+MpgClient.prototype._ask = function(cmd, data)
+{
+	var d = {server : {cmd: cmd}};
+	if (data !== undefined)
+		d.data = data;
+	this.websocket.send( JSON.stringify(d) );
+}
 
 MpgClient.prototype._parse = function(evt)
 {

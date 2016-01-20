@@ -78,7 +78,7 @@ wss.on('connection', function connection(ws) {
 	Commands:
 	
 		set-user-name "newName"
-		set-user-chan "newChanName"
+		set-user-chan {name:"newChanName", "pass":"newChanPass"} 
 		
 		set-chan-name "newName"
 		set-chan-pass "newPass"
