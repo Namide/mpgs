@@ -33,24 +33,23 @@ wss.on('connection', function connection(ws) {
 	TODO: new VO struct
 	
 	{
-		(not "name" for Client->Server)
-		user 
-		userMsg:		{name: $UserName, text: $String}
-		userEvt:		{name: $UserName, label: $String, data: $data}
-		userData:		{name: $UserName, data: $data}
+		(not "name" and "from" for Client->Server)
+		userMsg:		{from: $UserName, to: $UserName, text: $String}		# to disable for Server->Client
+		userEvt:		{name: $UserName, label: $String, data: $data}		
+		userData:		{name: $UserName, data: $data}						<-> $Data
 		
 		(not name for Client->Server)
-		chanMsg:		{name: $UserName, text: $String}
+		chanMsg:		{name: $UserName, text: $String}					<-> $String
 		chanEvt:		{label: $String, data: $data}
 		chanData:		$data
-		chanUserList: 	$Array
+		chanUserList: 	$Array												# server -> client
 						// [ "Jean", "Nicolas" ... ]
 						// [ {role:0, data: {name: "Jean"}}, {role:1, data: {name: "Nicolas", x: 25, y: 65}} ]
 		
-		serverMsg:		$String
+		serverMsg:		$String							# server -> client
 		serverEvt:		{label: $String, data: $data}	# server -> client
 		serverCmd:		{label: $String, data: $data}	# client -> server
-		serverChanList: $Array
+		serverChanList: $Array							# server -> client
 						// [ "SF", "Linux" ... ]
 						// [ {data: {name: "SF", color: "003"}}, {data: {name: "Linux", min: 1, max: 2000}} ]
 	}
@@ -74,9 +73,11 @@ wss.on('connection', function connection(ws) {
 	
 	serverEvt:
 
-		{label: "add-user", data:$UserData}
-		{label: "add-user", data:$UserData}
-
+		{label: "user-join", data: $UserData}
+		{label: "user-connected", data: $UserData}
+		{label: "user-offline", data: $UserName}
+		{label: "user-left", data: $UserName}
+		
 
 
 
