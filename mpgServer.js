@@ -28,6 +28,67 @@ wss.on('connection', function connection(ws) {
 
 /*
 
+
+
+	TODO: new VO struct
+	
+	{
+		(not "name" for Client->Server)
+		user 
+		userMsg:		{name: $UserName, text: $String}
+		userEvt:		{name: $UserName, label: $String, data: $data}
+		userData:		{name: $UserName, data: $data}
+		
+		(not name for Client->Server)
+		chanMsg:		{name: $UserName, text: $String}
+		chanEvt:		{label: $String, data: $data}
+		chanData:		$data
+		chanUserList: 	$Array
+						// [ "Jean", "Nicolas" ... ]
+						// [ {role:0, data: {name: "Jean"}}, {role:1, data: {name: "Nicolas", x: 25, y: 65}} ]
+		
+		serverMsg:		$String
+		serverEvt:		{label: $String, data: $data}	# server -> client
+		serverCmd:		{label: $String, data: $data}	# client -> server
+		serverChanList: $Array
+						// [ "SF", "Linux" ... ]
+						// [ {data: {name: "SF", color: "003"}}, {data: {name: "Linux", min: 1, max: 2000}} ]
+	}
+	
+	serverCmd:
+	
+		{label: "set-chan-pass", data:"newPass"}
+		
+		{label: "get-user-data", data: "userName"}
+		
+		{label: "get-list-user"}
+		{label: "get-list-user-data"}
+		
+		{label: "get-list-chan"}
+		{label: "get-list-chan-data"}
+		
+		{label: "get-chan-data"}
+		
+		{label: "kick-user", data: "userName"}
+	
+	
+	serverEvt:
+
+		{label: "add-user", data:$UserData}
+		{label: "add-user", data:$UserData}
+
+
+
+
+
+
+
+
+
+==========================================================
+
+
+
 	client -> server
 	{
 		server : { cmd:$String, data:Object } ,

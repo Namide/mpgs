@@ -9,16 +9,16 @@
 
 function MpgUser() {
 	
-	this.name;
+	//this.name;
 	this.role;
-	this.chan;
+	//this.chan;
 	
 	this.data = { };
 }
 
 function MpgChan() {
 
-	this.name;
+	//this.name;
 	this.users = [];
 	this.datas = {};
 }
@@ -154,7 +154,7 @@ MpgClient.prototype.getUser = function(name) {
 	var i = u.length;
 	while (--i > -1)
 	{
-		if (u[i].name === name)
+		if (u[i].data.name === name)
 			return u;
 	}
 	
@@ -325,7 +325,7 @@ MpgClient.prototype._ask = function(cmd, data)
 MpgClient.prototype._parse = function(evt)
 {
 	var msg = JSON.parse(evt.data);
-	
+	console.log(msg);
 	
 	if (msg.msg !== undefined) {
 		var d = msg.msg;
@@ -377,14 +377,14 @@ MpgClient.prototype._parse = function(evt)
 			
 			var dt = d.data;
 			this._setChanData(dt);
-			this.onEvtChan(dt);
+			this.onDataChan(dt);
 		}
 		else if (d.type === "user") {
 			
 			var dt = d.data;
 			var u = this.getUser(d.name);
 			this._setUserData(dt, u);
-			this.onEvtChan(dt, u);
+			this.onDataUser(dt, u);
 		}			
 	}
 };
@@ -399,6 +399,8 @@ MpgClient.prototype._setUserData = function(data, user) {
 
 MpgClient.prototype._setChanData = function(data) {
 	
+	if (this.chan === undefined)
+		this.chan = new MpgChan();
 		
 	for (key in data) {
 
