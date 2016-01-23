@@ -1,5 +1,4 @@
 // 'use strict';
-	
 
 /*!
  * mpgs
@@ -9,16 +8,13 @@
 
 function MpgUser() {
 	
-	//this.name;
 	this.role;
-	//this.chan;
-	
+	this.chan;
 	this.data = { };
 }
 
 function MpgChan() {
 
-	//this.name;
 	this.users = [];
 	this.datas = {};
 }
@@ -171,98 +167,54 @@ MpgClient.prototype.getUser = function(name) {
 
 MpgClient.prototype.sendMsg = function(msg, userName) {
 	
-	var data;
+	var d;
 	if (userName === undefined) {
 		
-		data = { chanMsg : msg };
+		d = {chanMsg: msg};
 		
 	} else {
 		
-		data = { userMsg : { name: userName, msg : msg } };
+		d = {userMsg: {name: userName, text: msg} };
 	}
 	
-	this.websocket.send( JSON.stringify(data) );
+	this.websocket.send( JSON.stringify(d) );
 };
 
-MpgClient.prototype.sendUserEvt = function(evtDatas, userName) {
+MpgClient.prototype.sendUserEvt = function(label, data, userName) {
 	
-	var data;
+	var d;
 	if (userName === undefined) {
 		
-		data = { userEvt : { name : this.me.name, evt : evtDatas } };
+		d = {userEvt: {label: label, data: data} };
 		
 	} else {
 		
-		data = { userEvt : { name : userName, evt : evtDatas } };
+		d = {userEvt: {label: label, data: data, name:userName} };
 	}
 	
-	this.websocket.send( JSON.stringify(data) );
+	this.websocket.send( JSON.stringify(d) );
 };
 
-MpgClient.prototype.sendUserData = function(userData) {
+MpgClient.prototype.sendUserData = function(data) {
 	
-	//var data;
-	//if (userName === undefined) {
-		
-		var data = { userData : userData /*{ name : this.me.name, datas : datas }*/ };
-		
-	/*} else {
-		
-		data = { userData : { name : userName, datas : datas } };
-	}*/
-	
-	this.websocket.send( JSON.stringify(data) );
+	var d = {userData : data};
+	this.websocket.send( JSON.stringify(d) );
 };
 
-MpgClient.prototype.sendChanEvt = function(evtDatas) {
+MpgClient.prototype.sendChanEvt = function(label, data) {
 	
-	var data = { chanEvt : evtDatas };
-	this.websocket.send( JSON.stringify(data) );
+	var d = {chanEvt: {label: label, data: data};
+	this.websocket.send( JSON.stringify(d) );
 };
 
-MpgClient.prototype.sendChanData = function(datas) {
+MpgClient.prototype.sendChanData = function(data) {
 	
-	var data = { chanData : datas };
-	this.websocket.send( JSON.stringify(data) );
+	var d = {chanData : data};
+	this.websocket.send( JSON.stringify(d) );
 };
-
-
-
-
-/*
-		!!!!!!!!!!!!!!!!!!!!
-
-			changeChan
-			getChanList
-			getUserList
-			changeName
-			kickUser
-			
-				set-user-name "newName"
-				set-user-chan {name:"newChanName", "pass":"newChanPass"} 
-
-				set-chan-name "newName"
-				set-chan-pass "newPass"
-
-				get-user-data "userName"
-
-				get-list-user
-				get-list-user-data
-
-				get-list-chan
-				get-list-chan-data
-
-				get-chan-data
-
-				kick-user "userName"
-			
-*/
 
 MpgClient.prototype.askChangeChan = function(chanName, chanPass) {
-	if (chanPass === undefined)
-		chanPass = "";
-	//this._ask("set-user-chan", {name:chanName, "pass":chanPass});
-	this.sendUserData({chan: {name: chanName, pass: chanPass}});
+	this._ask("set-user-chan", {name: chanName, pass: ((chanPass === undefined)?"":chanPass) });
 };
 
 MpgClient.prototype.askChangeUserName = function(newName) {
@@ -278,9 +230,9 @@ MpgClient.prototype.askChangeChanPass = function(newPass) {
 	this._ask("set-chan-pass", newPass);
 };
 
-MpgClient.prototype.askUserData = function(userName) {
+/*MpgClient.prototype.askUserData = function(userName) {
 	this._ask("get-user-data", userName);
-};
+};*/
 
 MpgClient.prototype.askListUser = function() {
 	this._ask("get-list-user");
@@ -298,9 +250,9 @@ MpgClient.prototype.askListChanData = function() {
 	this._ask("get-list-chan-data");
 };
 
-MpgClient.prototype.askChanData = function() {
+/*MpgClient.prototype.askChanData = function() {
 	this._ask("get-chan-data");
-};
+};*/
 
 MpgClient.prototype.askKick = function(userName) {
 	this._ask("kick-user", userName);
@@ -314,9 +266,9 @@ MpgClient.prototype.askKick = function(userName) {
 
 */
 
-MpgClient.prototype._ask = function(cmd, data)
+MpgClient.prototype._ask = function(label, data)
 {
-	var d = {server : {cmd: cmd}};
+	var d = {serverCmd : {label: label}};
 	if (data !== undefined)
 		d.data = data;
 	this.websocket.send( JSON.stringify(d) );
@@ -392,7 +344,7 @@ MpgClient.prototype._parse = function(evt)
 MpgClient.prototype._setUserData = function(data, user) {
 	
 	for (key in data) {
-
+		
 		user.data[key] = data[key];
 	}		
 };

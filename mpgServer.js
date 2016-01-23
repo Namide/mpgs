@@ -54,11 +54,12 @@ wss.on('connection', function connection(ws) {
 						// [ {data: {name: "SF", color: "003"}}, {data: {name: "Linux", min: 1, max: 2000}} ]
 	}
 	
-	serverCmd:
+	serverCmd:	(client -> server)
 	
 		{label: "set-chan-pass", data:"newPass"}
+		{label: "set-user-chan", data:{name: "newChanName", pass:"newChanPass"}
 		
-		{label: "get-user-data", data: "userName"}
+		#{label: "get-user-data", data: "userName"}
 		
 		{label: "get-list-user"}
 		{label: "get-list-user-data"}
@@ -66,7 +67,7 @@ wss.on('connection', function connection(ws) {
 		{label: "get-list-chan"}
 		{label: "get-list-chan-data"}
 		
-		{label: "get-chan-data"}
+		#{label: "get-chan-data"}
 		
 		{label: "kick-user", data: "userName"}
 	
@@ -78,7 +79,9 @@ wss.on('connection', function connection(ws) {
 		{label: "user-offline", data: $UserName}
 		{label: "user-left", data: $UserName}
 		
-
+		{label: "error", data: {id: $ErrorNum, ...} }
+			
+			0	"no connection"
 
 
 
