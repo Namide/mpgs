@@ -34,24 +34,27 @@ wss.on('connection', function connection(ws) {
 	
 	{
 		(not "name" and "from" for Client->Server)
-		userMsg:		{from: $UserName, to: $UserName, text: $String}		# to disable for Server->Client
+		userMsg:		{from: $UserName, to: $UserId, text: $String}		# to disable for Server->Client
 		userEvt:		{name: $UserName, label: $String, data: $data}		
-		userData:		{name: $UserName, data: $data}						<-> $Data
+		userData:		$Data
 		
 		(not name for Client->Server)
 		chanMsg:		{name: $UserName, text: $String}					<-> $String
 		chanEvt:		{label: $String, data: $data}
+		
+			{label: "user-chan-change", data: {user:$UserData, chan:$ChanData}
+		
 		chanData:		$data
 		chanUserList: 	$Array												# server -> client
 						// [ "Jean", "Nicolas" ... ]
-						// [ {role:0, data: {name: "Jean"}}, {role:1, data: {name: "Nicolas", x: 25, y: 65}} ]
+						// [ {role:0, data: {name: "Jean", id: 5}}, {role:1, data: {name: "Nicolas" id: 25, x: 25, y: 65}} ]
 		
 		serverMsg:		$String							# server -> client
 		serverEvt:		{label: $String, data: $data}	# server -> client
 		serverCmd:		{label: $String, data: $data}	# client -> server
 		serverChanList: $Array							# server -> client
 						// [ "SF", "Linux" ... ]
-						// [ {data: {name: "SF", color: "003"}}, {data: {name: "Linux", min: 1, max: 2000}} ]
+						// [ {data: {id: 4, name: "SF", color: "003"}}, {id: 658, data: {name: "Linux", min: 1, max: 2000}} ]
 	}
 	
 	serverCmd:	(client -> server)
@@ -59,7 +62,7 @@ wss.on('connection', function connection(ws) {
 		{label: "set-chan-pass", data:"newPass"}
 		{label: "set-user-chan", data:{name: "newChanName", pass:"newChanPass"}
 		
-		#{label: "get-user-data", data: "userName"}
+		#{label: "get-user-data", data: "UserName"}
 		
 		{label: "get-list-user"}
 		{label: "get-list-user-data"}
@@ -74,18 +77,34 @@ wss.on('connection', function connection(ws) {
 	
 	serverEvt:
 
-		{label: "user-join", data: $UserData}
 		{label: "user-connected", data: $UserData}
-		{label: "user-offline", data: $UserName}
-		{label: "user-left", data: $UserName}
+		{label: "user-offline", data: {msg: $String, name: $UserName, id:$UserID}}
 		
-		{label: "error", data: {id: $ErrorNum, ...} }
+		
+		{label: "error", data: {id: $ErrorNum, vars:[]} }
 			
 			0	"no connection"
-
-
-
-
+			
+			
+			
+			
+			100	"commands"
+			101	"Command error: label undefined ($1)"
+			102 "Unknown command ($1)"
+			
+			200	"messages"
+			201	"Message to user $1 error (text or user name empty)"
+			
+			300	"user"
+			301	"The user $1 don't exist"
+			302	"You don't have permission to change chan data ($1)"
+			303	"You can only use alphanumeric, - and _ in an user name but you have write \"$1\""
+			304	"Name undefined"
+			305	"The name $1 is already used"
+			
+			400	"chan"
+			401	"You don't have permission to change the pass of the chan $1 but you have write \"$1\""
+			
 
 
 

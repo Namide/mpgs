@@ -3,8 +3,6 @@
 	<head>
 		<title>Chat</title>
 		<meta charset="utf-8">
-		<script type="text/javascript" src="jquery-2.2.0.min.js"></script>
-		<script type="text/javascript" src="mpgClient.js"></script>
 		<link rel="stylesheet" type="text/css" href="chat.css">
 	
 	</head>
@@ -21,9 +19,13 @@
 		<h2>WebSocket Test</h2>
 		<div id="output"></div>
 	
+	
+		<script type="text/javascript" src="jquery-2.2.0.min.js"></script>
+		<script type="text/javascript" src="mpgClient.js"></script>
+		
 		<script language="javascript" type="text/javascript">
 			
-			var mpgc = new MpgClient("ws://localhost:8080/mpgs");
+			var mpgc = new MpgClient("ws://localhost:8080/mpgs", "fr");
 			
 			
 			// LOGIN
@@ -47,9 +49,9 @@
 				output.appendChild(pre);
 			}
 			
-			mpgc.onServerOpen = function() {
+			/*mpgc.onServerOpen = function() {
 				mpgc.sendMsg("youhou!");
-			}
+			}*/
 			
 			
 		</script>
