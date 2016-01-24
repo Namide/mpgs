@@ -121,6 +121,7 @@ function MpgClient(URI, lang) {
 	//this.loadLang(langFile);
 	this.init();
 	
+	this._onChangeUserName;
 }
 
 
@@ -284,8 +285,9 @@ MpgClient.prototype.askChangeChan = function(chanName, chanPass) {
 	this._ask("set-user-chan", {name: chanName, pass: ((chanPass === undefined)?"":chanPass) });
 };
 
-MpgClient.prototype.askChangeUserName = function(newName) {
+MpgClient.prototype.askChangeUserName = function(newName, callback) {
 	//this._ask("set-user-name", newName);
+	this._onChangeUserName = callback;
 	this.sendUserData({name: newName});
 };
 
@@ -449,15 +451,17 @@ MpgClient.prototype._parse = function(evt)
 		
 		var d = msg.userData;
 		var user = this.getUserById(d.id);
+		this._setUserData(d, user);
+		/*if (user !== undefined)
 		for (var key in d) {
 
 			if (key === "name" && d[key] !== user.data.name) {
 
 				this.onMsgServer( this.trad.get(501, [user.data.name, d[key]]) );
 			}
-			
+
 			user.data[key] = d[key];
-		}
+		}*/
 		
 		this.onDataUser(user, d);
 	}
@@ -553,6 +557,12 @@ MpgClient.prototype._setUserData = function(data, user) {
 	for (key in data) {
 		
 		user.data[key] = data[key];
+		
+		if (user === this.me &&
+			key === "name" &&
+		    this._onChangeUserName !== undefined)
+			this._onChangeUserName(user);
+			
 	}		
 };
 

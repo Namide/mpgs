@@ -8,16 +8,44 @@
 	</head>
 	<body>
 		
-		<div id="login-form">
-			<h1>Welcom on this t'chat</h1>
+		<div id="page-name">
+			<h1>Welcome on this t'chat</h1>
 			<form action="">
-				<input id="name" type="text" pattern="^[_A-Za-z0-9-]+$" required autofocus placeholder="Name">
+				<input id="name" type="text" pattern="^[_A-Za-z0-9-]+$" required autofocus placeholder="Your name">
 				<input type="submit" value="Ok">
 			</form>
 		</div>
 		
-		<h2>WebSocket Test</h2>
-		<div id="output"></div>
+		<div id="page-tchat">
+			<ul>
+				<li class="chans">Salons</li>
+				<li class="users">Connectés</li>
+				<li class="chan">Home</li>
+			</ul>
+			
+			<div id="tab-chans">
+				
+				<div class="left">
+					<div class="out"></div>
+					<div class="in"></div>
+				</div>
+				<div class="right">
+					<div class="users"></div>
+				</div>
+			</div>
+			
+			<div id="tab-users">
+				
+			</div>
+			
+			<div id="tab-chan">
+				
+			</div>
+			
+		</div>
+		
+		
+		<!-- <div id="output"></div> -->
 	
 	
 		<script type="text/javascript" src="jquery-2.2.0.min.js"></script>
@@ -29,24 +57,25 @@
 			
 			
 			// LOGIN
-			$("#login-form").submit(function (e){
+			$("#page-name").submit(function (e){
 				
 				e.preventDefault();
-				//console.log($("#name").val());
-				mpgc.askChangeUserName($("#name").val())
+				mpgc.askChangeUserName($("#name").val(), function(user) {
+					$("#page-name").hide();
+				});
 				return false;
 			});
 			
 			
 			
 			
-			output = document.getElementById("output");
+			output = $("#tab-chans .out");
 			mpgc.onLog = function writeToScreen(message)
 			{
 				var pre = document.createElement("p");
 				pre.style.wordWrap = "break-word";
 				pre.innerHTML = message;
-				output.appendChild(pre);
+				output.append(pre);
 			}
 			
 			/*mpgc.onServerOpen = function() {
