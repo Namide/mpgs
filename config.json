@@ -26,7 +26,8 @@
 
 	"defaultUser": {
 		"data": {
-			"name": "guest"
+			"name": "guest",
+			"role": "user"
 		}
 	}
 
