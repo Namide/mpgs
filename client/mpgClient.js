@@ -643,6 +643,12 @@ MpgTrad.prototype._trads = {
 		306: {en: "Name undefined",
 			  fr: "Nom indéfinis"},
 
+		307: {en: "You can't change your role",
+			  fr: "Vous ne pouvez pas changer votre rôle"},
+			  
+		308: {en: "A user event must have a label property ($1)",
+			  fr: "Un évênement utilisateur doit avoir une propriété \"label\" ($1)"},
+
 		// Chan
 		401: {en: "You don't have permission to change the pass of the chan",
 			  fr: "Vous n'avez pas la permission de changer le mot de passe du salon"},
@@ -656,6 +662,9 @@ MpgTrad.prototype._trads = {
 		404: {en: "You can only use alphanumeric, - and _ in an chan name but you have write $1",
 			  fr: "Pour un nom de salon vous ne pouvez utiliser que des caractères latin standarts (minuscules, majuscules), des chiffres, des tirets et des underscores mais vous avez écris $1"},
 	
+		405: {en: "A chan event must have a label property ($1)",
+			  fr: "Un évênement de salon doit avoir une propriété \"label\" ($1)"},
+			  
 		// Messages
 		501: {en: "$1 change his name to $2",
 			  fr: "$1 s'appele désormais $2"}
