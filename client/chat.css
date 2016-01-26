@@ -5,6 +5,7 @@
 	bottom: 0;
 	left: 0;
 	right: 0;
+	padding: 0 0 100px 0;
 	
 	display: flex;
 	justify-content: center;
@@ -21,4 +22,11 @@
 #page-tchat>ul>li {
 	
 	display: inline-block;
+}
+
+
+
+#tab-chans {
+	
+	
 }

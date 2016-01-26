@@ -6,18 +6,145 @@
  * MIT Licensed
  */
 
+
+
+
+/* =======================
+
+		USER
+
+======================= */
+
 function MpgUser () {
 	
-	this.role;
+	//this.role;
 	this.chan;
 	this.data = { };
+	
+	this.onChangeName;// = function(name) {};
 }
+
+
+
+/* =======================
+
+		CHAN
+
+======================= */
 
 function MpgChan () {
 
 	this.users = [];
 	this.data = {};
 }
+
+MpgChan.prototype.addUser = function (user) {
+	
+	if (user.data.name !== undefined &&
+		this.hasUserByName(user.data.name) ) {
+		
+		this.users.push(user);
+		return true;
+		
+	} else if (user.data.id !== undefined &&
+			   this.hasUserByName(user.data.id) ) {
+		
+		this.users.push(user);
+		return true;
+	}
+	
+	return false;
+};
+
+MpgChan.prototype.getUserByName = function (name) {
+	
+	var i = this.users.length;
+	while (--i > -1) {
+		
+		if (this.users[i].data.name === name)
+			return this.users[i];
+	}
+	
+	return null;
+};
+
+MpgChan.prototype.getUserById = function (id) {
+	
+	var i = this.users.length;
+	while (--i > -1) {
+		
+		if (this.users[i].data.id === id)
+			return this.users[i];
+	}
+	
+	return null;
+};
+
+MpgChan.prototype.hasUserById = function (id) {
+	
+	return this._getUserIById(id) > -1;	
+};
+	
+MpgChan.prototype.hasUserByName = function (name) {
+	
+	return this._getUserIByName(name) > -1;	
+};
+
+MpgChan.prototype.removeUserByName = function (name) {
+	
+	var userI = this._getUserIByName(name);
+	if (userI > -1) {
+		
+		this.users.splice(userI, 1);
+		return true;
+	}
+	
+	return false;
+};
+
+MpgChan.prototype.removeUserById = function (id) {
+	
+	var userI = this._getUserIById(id);
+	if (userI > -1) {
+		
+		this.users.splice(userI, 1);
+		return true;
+	}
+	
+	return false;
+};
+
+MpgChan.prototype._getUserIById = function (id) {
+	
+	var i = this.users.length;
+	while (--i > -1) {
+		
+		if (this.users[i].data.id === id)
+			return i;
+	}
+	
+	return -1;
+};
+
+MpgChan.prototype._getUserIByName = function (name) {
+	
+	var i = this.users.length;
+	while (--i > -1) {
+		
+		if (this.users[i].data.name === name)
+			return i;
+	}
+	
+	return -1;
+};
+
+
+
+/* =======================
+
+		CLIENT
+
+======================= */
 
 function MpgClient(URI, lang) {
 
@@ -121,7 +248,7 @@ function MpgClient(URI, lang) {
 	//this.loadLang(langFile);
 	this.init();
 	
-	this._onChangeUserName;
+	//this._onChangeUserName;
 }
 
 
@@ -195,13 +322,9 @@ MpgClient.prototype.close = function() {
 
 MpgClient.prototype.getUserByName = function(name) {
 	
-	var u = this.chan.users;
-	var i = u.length;
-	while (--i > -1)
-	{
-		if (u[i].data.name === name)
-			return u;
-	}
+	var u = this.chan.getUserByName(name);
+	if (u !== undefined)
+		return u;
 	
 	if (this.me.data.name === name)
 		return this.me;
@@ -211,13 +334,9 @@ MpgClient.prototype.getUserByName = function(name) {
 
 MpgClient.prototype.getUserById = function(id) {
 	
-	var u = this.chan.users;
-	var i = u.length;
-	while (--i > -1)
-	{
-		if (u[i].data.id === id)
-			return u;
-	}
+	var u = this.chan.getUserById(id);
+	if (u !== null)
+		return u;
 	
 	if (this.me.data.id === id)
 		return this.me;
@@ -226,6 +345,29 @@ MpgClient.prototype.getUserById = function(id) {
 };
 
 
+
+/*
+
+	Dispatcher
+
+*/
+
+MpgClient.prototype._dispatchChanUserList = function() {
+	
+	if (this.me === undefined ||
+		this.chan === undefined ||
+		this.chan.users === undefined )
+	{
+		return;
+	}
+		
+	
+	var list = this.chan.users.concat([this.me]);
+	
+	if (this.onChanUserList !== undefined)
+		this.onChanUserList(list);
+};
+			
 
 /*
 
@@ -282,12 +424,17 @@ MpgClient.prototype.sendChanData = function(data) {
 };
 
 MpgClient.prototype.askChangeChan = function(chanName, chanPass) {
-	this._ask("set-user-chan", {name: chanName, pass: ((chanPass === undefined)?"":chanPass) });
+	
+	this.sendUserData({chan:{name: chanName, pass: chanPass}});
+	
+	//this._ask("set-user-chan", {name: chanName, pass: ((chanPass === undefined)?"":chanPass) });
 };
 
 MpgClient.prototype.askChangeUserName = function(newName, callback) {
 	//this._ask("set-user-name", newName);
-	this._onChangeUserName = callback;
+	//this._onChangeUserName = callback;
+	
+	this.me.onChangeName = callback;
 	this.sendUserData({name: newName});
 };
 
@@ -396,13 +543,19 @@ MpgClient.prototype._parse = function(evt)
 	if (msg.chanUserList !== undefined) {
 		
 		var d = msg.chanUserList;
-		this.onChanUserList(d);
+		for (var i = 0; i < d; i++) {
+			
+			// todo
+		}
+		
+		this._dispatchChanUserList();
 	}
 	
 	if (msg.serverChanList !== undefined) {
 		
 		var d = msg.serverChanList;
-		this.onServerChanList(d);
+		
+		// todo
 	}
 	
 	if (msg.serverEvt !== undefined) {
@@ -410,7 +563,7 @@ MpgClient.prototype._parse = function(evt)
 		var d = msg.serverEvt;
 		switch (d.label) {
 				
-			case "user-connected" :
+			/*case "user-connected" :
 				
 				if (this.me === undefined) {
 					this.me = new MpgUser();
@@ -419,7 +572,7 @@ MpgClient.prototype._parse = function(evt)
 				
 				this.onMsgServer(this.trad.get(3));
 				
-				break;
+				break;*/
 			case "user-offline" :
 				
 				
@@ -450,8 +603,36 @@ MpgClient.prototype._parse = function(evt)
 	if (msg.userData !== undefined) {
 		
 		var d = msg.userData;
-		var user = this.getUserById(d.id);
-		this._setUserData(d, user);
+		if (this.me === undefined) {
+			
+			this.me = new MpgUser();
+			this._setUserData(d, this.me);
+			this.onMsgServer(this.trad.get(3));
+		
+		} else if (d.id !== undefined) {
+			
+			var u = this.getUserById(d.id);
+			if (u !== null) {
+				
+				this._setUserData(d, u);
+			}
+			
+		} else if (d.name !== undefined) {
+			
+			var u = this.getUserByName(d.name);
+			if (u !== null) {
+				
+				this._setUserData(d, u);
+			}
+		} else {
+			
+			var u = new MpgUser();
+			this._setUserData(d, u);
+		}
+
+		
+		
+		
 		/*if (user !== undefined)
 		for (var key in d) {
 
@@ -463,29 +644,18 @@ MpgClient.prototype._parse = function(evt)
 			user.data[key] = d[key];
 		}*/
 		
-		this.onDataUser(user, d);
+		
 	}
 	
 	if (msg.chanData !== undefined) {
 		
-		if (this.chan === undefined) {
-			
-			this.chan = new MpgChan();
-			
-		} else if (	msg.chanData.id !== undefined &&
-				 	msg.chanData.id !== this.chan.id) {
-			
-			this.chan = new MpgChan();
-		}
-			
-		
 		var d = msg.chanData;
-		for (var key in d) {
-
-			this.chan.data[key] = d[key];
-		}
 		
-		this.onDataChan(d);
+		this.chan = new MpgChan();
+		this._setChanData(d);
+		
+		
+		
 	}
 	
 	
@@ -556,25 +726,67 @@ MpgClient.prototype._setUserData = function(data, user) {
 	
 	for (key in data) {
 		
-		user.data[key] = data[key];
 		
-		if (user === this.me &&
-			key === "name" &&
-		    this._onChangeUserName !== undefined)
-			this._onChangeUserName(user);
+		if (key === "name") {
 			
-	}		
+			if (user.onChangeName !== undefined)	
+				user.onChangeName(user.name, user);
+			
+			user.data.name = data.name;
+			
+			this._dispatchChanUserList();
+			
+		} else if (key === "chan") {
+			
+			if (user.chan.name !== data.chan.name) {
+				
+				if (user === this.me) {
+
+					this.chan = undefined;
+					//this.chan.data.name = data.chan.name;
+					
+					this._setChanData(data.chan);	
+
+				} else {
+
+					delete(this.chan.users[user.data.name.toLowerCase()]);
+
+					/*if (this.onChanUserList !== undefined)
+						this.onChanUserList(this.chan.users);*/
+					
+					this._dispatchChanUserList();
+				}
+				
+			} else {
+				
+				delete(data[key]);
+			}
+			
+		} else {
+			
+			user.data[key] = data[key];
+		
+		}
+		
+	}
+	
+	this.onDataUser(user, data);
 };
 
 MpgClient.prototype._setChanData = function(data) {
 	
-	if (this.chan === undefined)
+	if (this.chan === undefined) {
+		
 		this.chan = new MpgChan();
+	}
 		
 	for (key in data) {
 
 		this.chan.data[key] = data[key];
 	}
+	
+	if (this.onDataChan !== undefined)
+		this.onDataChan(data);
 };
 
 
@@ -664,6 +876,9 @@ MpgTrad.prototype._trads = {
 	
 		405: {en: "A chan event must have a label property ($1)",
 			  fr: "Un évênement de salon doit avoir une propriété \"label\" ($1)"},
+			  
+		406: {en: "You can't join the chan $1",
+			  fr: "Vous n'êtes pas autorisé à rejoindre le salon $1)"},
 			  
 		// Messages
 		501: {en: "$1 change his name to $2",

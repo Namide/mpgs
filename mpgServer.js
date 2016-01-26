@@ -60,7 +60,7 @@ wss.on('connection', function connection(ws) {
 	serverCmd:	(client -> server)
 	
 		{label: "set-chan-pass", data:"newPass"}
-		{label: "set-user-chan", data:{name: "newChanName", pass:"newChanPass"}
+		#{label: "set-user-chan", data:{name: "newChanName", pass:"newChanPass"}
 		
 		#{label: "get-user-data", data: "UserName"}
 		
@@ -77,7 +77,7 @@ wss.on('connection', function connection(ws) {
 	
 	serverEvt:
 
-		{label: "user-connected", data: $UserData}
+		# {label: "user-connected", data: $UserData}
 		{label: "user-offline", data: {msg: $String, name: $UserName, id:$UserID}}
 		
 		

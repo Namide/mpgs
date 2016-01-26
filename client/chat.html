@@ -27,11 +27,17 @@
 				
 				<div class="left">
 					<div class="out"></div>
-					<div class="in"></div>
+					<div class="in">
+						<form action="">
+							<input id="msg" type="text" required autofocus placeholder="Message">
+							<input type="submit" value="Ok">
+						</form>
+					</div>
 				</div>
 				<div class="right">
 					<div class="users"></div>
 				</div>
+				
 			</div>
 			
 			<div id="tab-users">
@@ -54,29 +60,48 @@
 		<script language="javascript" type="text/javascript">
 			
 			var mpgc = new MpgClient("ws://localhost:8080/mpgs", "fr");
+			var output = $("#tab-chans .out");
+			var input = $("#tab-chans .in #msg");
 			
 			
 			// LOGIN
 			$("#page-name").submit(function (e){
 				
 				e.preventDefault();
-				mpgc.askChangeUserName($("#name").val(), function(user) {
+				mpgc.askChangeUserName($("#name").val(), function(name) {
+					
+					//alert(name);
 					$("#page-name").hide();
 				});
 				return false;
 			});
 			
 			
-			
-			
-			output = $("#tab-chans .out");
-			mpgc.onLog = function writeToScreen(message)
+			mpgc.onLog = function (message)
 			{
 				var pre = document.createElement("p");
 				pre.style.wordWrap = "break-word";
 				pre.innerHTML = message;
 				output.append(pre);
-			}
+			};
+			
+			mpgc.onChanUserList = function (users)
+			{
+				var t = "<ul>";
+				for(var i = 0; i<users.length; i++)
+					t += "<li>" + ((users[i].name === undefined) ? users[i] : users[i].name) + "</li>";
+				t += "</ul>";
+					
+				$("#tab-chans .right .users").html(t);
+			};
+			
+			$("#tab-chans").submit(function (e){
+				
+				e.preventDefault();
+				mpgc.sendMsg($("#msg").val());
+				$("#msg").val("");
+				return false;
+			});
 			
 			/*mpgc.onServerOpen = function() {
 				mpgc.sendMsg("youhou!");
