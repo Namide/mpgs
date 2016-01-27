@@ -56,7 +56,9 @@
 		<script type="text/javascript" src="mpgClient.js"></script>
 		<script language="javascript" type="text/javascript">
 			
-			var mpgc = new MpgClient("ws://localhost:8080/mpgs", "fr");
+			var mpgc = new MpgClient("ws://localhost:8080/mpgs", "fr", function() {
+				console.log("Client connected to server");
+			});
 			var output = $("#tab-chans .out");
 			var input = $("#tab-chans .in #msg");
 			
@@ -64,20 +66,19 @@
 				
 				
 				// CHANGE NAME
-				$("#page-name").submit(function (e){
+				$("#page-name").submit (function (e) {
 
 					e.preventDefault();
-					mpgc.askChangeUserName($("#name").val(), function(name) {
+					mpgc.askChangeUserName($("#name").val(), function (name) {
 
-						//alert(name);
 						$("#page-name").hide();
 					});
 					return false;
 				});
 
 				// DISPLAY CHAN TEXT
-				mpgc.onLog = function (message)
-				{
+				mpgc.onLog = function (message) {
+					
 					var pre = document.createElement("p");
 					pre.style.wordWrap = "break-word";
 					pre.innerHTML = message;
@@ -85,9 +86,7 @@
 				};
 
 				// DISPLAY CHAN USER LIST
-				mpgc.onChanUserList = function (users)
-				{
-					console.log("=>" + users.length);
+				mpgc.onChanUserList = function (users) {
 					
 					var t = "<ul>";
 					for(var i = 0; i<users.length; i++)
@@ -96,8 +95,16 @@
 
 					$("#tab-chans .right .users").html(t);
 					$("#tab-chans .right .num").html(users.length + " people");
-
 				};
+				
+				// WRITE MESSAGE ON CHAN
+				mpgc.onMsgChan = function (name, msg) {
+					
+					var pre = document.createElement("p");
+					pre.style.wordWrap = "break-word";
+					pre.innerHTML = "<strong>" + name + "</strong> : " + msg;
+					output.append(pre);
+				}
 
 				// SEND CHAN TEXT
 				$("#tab-chans").submit(function (e){

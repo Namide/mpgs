@@ -7,30 +7,31 @@
  */
 
 
-
-
-/* =======================
-
-		USER
-
-======================= */
+/*
+		┌───────────────────────────┐
+		│							│
+		│			USER			│
+		│							│
+		└───────────────────────────┘
+*/
 
 function MpgUser () {
 	
-	//this.role;
 	this.chan;
 	this.data = { };
 	
-	this.onChangeName;// = function(name) {};
+	this.onChangeName;
 }
 
 
 
-/* =======================
-
-		CHAN
-
-======================= */
+/*
+		┌───────────────────────────┐
+		│							│
+		│			CHAN			│
+		│							│
+		└───────────────────────────┘
+*/
 
 function MpgChan () {
 
@@ -141,13 +142,15 @@ MpgChan.prototype._getUserIndexByName = function (name) {
 
 
 
-/* =======================
+/*
+		┌───────────────────────────┐
+		│							│
+		│			CLIENT			│
+		│							│
+		└───────────────────────────┘
+*/
 
-		CLIENT
-
-======================= */
-
-function MpgClient(URI, lang) {
+function MpgClient(URI, lang, onConnected) {
 
 	this.me;
 	this.chan;
@@ -168,10 +171,10 @@ function MpgClient(URI, lang) {
 			
 	*/
 	
-	this.onServerOpen = function(msg) {
+	/*this.onServerOpen = function(msg) {
 		//this.onLog("socket open");
 		//console.log(msg);
-	};
+	};*/
 	
 	this.onServerClose = function(msg) {
 		//this.onLog("socket closed");
@@ -247,7 +250,7 @@ function MpgClient(URI, lang) {
 	*/
 	
 	//this.loadLang(langFile);
-	this.init();
+	this.init(onConnected);
 	
 	//this._onChangeUserName;
 }
@@ -281,23 +284,20 @@ function MpgClient(URI, lang) {
 };*/
 
 
-MpgClient.prototype.init = function() {
+MpgClient.prototype.init = function(onConnected) {
 	
 	var mpgClient = this;
 	
 	this.websocket = new WebSocket(this.uri);
 	
-	this.websocket.onopen = function(evt) { mpgClient.onServerOpen(evt.data) };
+	if (onConnected !== undefined)
+		this.websocket.onopen = onConnected;
+	
 	this.websocket.onclose = function(evt) { mpgClient.onServerClose(evt.data) };
 	this.websocket.onmessage = function(evt) { mpgClient._parse(evt); };
 	this.websocket.onerror = function(evt) { mpgClient.onServerError(evt.data); };
 	
 	window.addEventListener("beforeunload", function(e){ mpgClient.close(); }, false);
-	
-	//writeToScreen("CONNECTED");
-	//doSend("WebSocket rocks");
-	
-	
 };
 
 
@@ -735,10 +735,13 @@ MpgClient.prototype._setChanData = function(data) {
 };
 
 
+
 /*
-
-		TRADUCTIONS
-
+		┌───────────────────────────────┐
+		│								│
+		│			TRADUCTION			│
+		│								│
+		└───────────────────────────────┘
 */
 
 function MpgTrad (lang) {
