@@ -18,9 +18,9 @@
 		
 		<div id="page-tchat">
 			<ul>
-				<li class="chans">Salons</li>
-				<li class="users">Connectés</li>
-				<li class="chan">Home</li>
+				<li class="chans"><button type="button">Salons</button></li>
+				<li class="users"><button type="button">Connectés</button></li>
+				<li class="chan"><button type="button">Home</button></li>
 			</ul>
 			
 			<div id="tab-chans">
@@ -52,65 +52,63 @@
 			</div>
 			
 		</div>
-		
-		
-		<!-- <div id="output"></div> -->
 	
 	
 		<script type="text/javascript" src="jquery-2.2.0.min.js"></script>
 		<script type="text/javascript" src="mpgClient.js"></script>
-		
 		<script language="javascript" type="text/javascript">
 			
 			var mpgc = new MpgClient("ws://localhost:8080/mpgs", "fr");
 			var output = $("#tab-chans .out");
 			var input = $("#tab-chans .in #msg");
 			
-			
-			// LOGIN
-			$("#page-name").submit(function (e){
+			$(function(){
 				
-				e.preventDefault();
-				mpgc.askChangeUserName($("#name").val(), function(name) {
-					
-					//alert(name);
-					$("#page-name").hide();
+				
+				// CHANGE NAME
+				$("#page-name").submit(function (e){
+
+					e.preventDefault();
+					mpgc.askChangeUserName($("#name").val(), function(name) {
+
+						//alert(name);
+						$("#page-name").hide();
+					});
+					return false;
 				});
-				return false;
-			});
-			
-			
-			mpgc.onLog = function (message)
-			{
-				var pre = document.createElement("p");
-				pre.style.wordWrap = "break-word";
-				pre.innerHTML = message;
-				output.append(pre);
-			};
-			
-			mpgc.onChanUserList = function (users)
-			{
-				var t = "<ul>";
-				for(var i = 0; i<users.length; i++)
-					t += "<li><strong>" + users[i].data.name + "</strong></li>";
-				t += "</ul>";
-					
-				$("#tab-chans .right .users").html(t);
-				$("#tab-chans .right .num").html(users.length + " people");
+
+				// DISPLAY CHAN TEXT
+				mpgc.onLog = function (message)
+				{
+					var pre = document.createElement("p");
+					pre.style.wordWrap = "break-word";
+					pre.innerHTML = message;
+					output.append(pre);
+				};
+
+				// DISPLAY CHAN USER LIST
+				mpgc.onChanUserList = function (users)
+				{
+					var t = "<ul>";
+					for(var i = 0; i<users.length; i++)
+						t += "<li><strong>" + users[i].data.name + "</strong></li>";
+					t += "</ul>";
+
+					$("#tab-chans .right .users").html(t);
+					$("#tab-chans .right .num").html(users.length + " people");
+
+				};
+
+				// SEND CHAN TEXT
+				$("#tab-chans").submit(function (e){
+
+					e.preventDefault();
+					mpgc.sendMsg($("#msg").val());
+					$("#msg").val("");
+					return false;
+				});
 				
-			};
-			
-			$("#tab-chans").submit(function (e){
-				
-				e.preventDefault();
-				mpgc.sendMsg($("#msg").val());
-				$("#msg").val("");
-				return false;
 			});
-			
-			/*mpgc.onServerOpen = function() {
-				mpgc.sendMsg("youhou!");
-			}*/
 			
 			
 		</script>

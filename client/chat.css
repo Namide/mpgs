@@ -5,7 +5,7 @@ html, body {
 	padding: 0;
 }
 
-ul, li, p {
+ul, li, p, button {
 	
 	margin: 0;
 	padding: 0;
@@ -47,7 +47,15 @@ li {
 
 #page-tchat>ul {
 	
-	padding: 20px;
+	padding: 20px 20px 0 20px;
+}
+
+#page-tchat>ul>li button {
+	
+	border: 1px #333 solid;
+	border-radius: 8px 8px 0 0;
+	border-bottom: none;
+	padding: 4px 12px;
 }
 
 #tab-chans {
