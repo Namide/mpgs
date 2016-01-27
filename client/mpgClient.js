@@ -8,17 +8,17 @@
 
 
 /*
-		┌───────────────────────────┐
-		│							│
-		│			USER			│
-		│							│
-		└───────────────────────────┘
+		╔═══════════════════════════╗
+		║							║
+		║			USER			║
+		║							║
+		╚═══════════════════════════╝
 */
 
 function MpgUser () {
 	
 	this.chan;
-	this.data = { };
+	this.data = {};
 	
 	this.onChangeName;
 }
@@ -26,11 +26,11 @@ function MpgUser () {
 
 
 /*
-		┌───────────────────────────┐
-		│							│
-		│			CHAN			│
-		│							│
-		└───────────────────────────┘
+		╔═══════════════════════════╗
+		║							║
+		║			CHAN			║
+		║							║
+		╚═══════════════════════════╝
 */
 
 function MpgChan () {
@@ -38,6 +38,13 @@ function MpgChan () {
 	this.users = [];
 	this.data = {};
 }
+
+
+/*
+		    ┌───────────────────┐
+		    │	Chan helpers	│
+		    └───────────────────┘
+*/
 
 MpgChan.prototype.join = function (user) {
 	
@@ -116,6 +123,13 @@ MpgChan.prototype.removeUserById = function (id) {
 	return false;
 };
 
+
+/*
+		    ┌───────────────────┐
+		    │	Chan private	│
+		    └───────────────────┘
+*/
+
 MpgChan.prototype._getUserIndexById = function (id) {
 	
 	var i = this.users.length;
@@ -143,11 +157,11 @@ MpgChan.prototype._getUserIndexByName = function (name) {
 
 
 /*
-		┌───────────────────────────┐
-		│							│
-		│			CLIENT			│
-		│							│
-		└───────────────────────────┘
+		╔═══════════════════════════╗
+		║							║
+		║			CLIENT			║
+		║							║
+		╚═══════════════════════════╝
 */
 
 function MpgClient(URI, lang, onConnected) {
@@ -243,46 +257,18 @@ function MpgClient(URI, lang, onConnected) {
 		this.onLog(list);
 	};
 	
-	/*
 	
-			INIT
 	
-	*/
 	
-	//this.loadLang(langFile);
 	this.init(onConnected);
-	
-	//this._onChangeUserName;
 }
 
 
 /*
-
-	WebSocket Events
-
+		    ┌───────────────────┐
+		    │	 client init	│
+		    └───────────────────┘
 */
-
-/*MpgClient.prototype.loadLang = function(URL) {
-
-	var server = this;
-	var xobj = new XMLHttpRequest();
-    xobj.overrideMimeType("application/json");
-    xobj.open('GET', URL, true);
-    xobj.onreadystatechange = function () {
-		
-		if (xobj.readyState == 4 && xobj.status == "200") {
-			
-			server = xobj.responseText;
-			
-		} else {
-			
-			this.on
-		}
-    };
-	
-    xobj.send(null);
-};*/
-
 
 MpgClient.prototype.init = function(onConnected) {
 	
@@ -304,22 +290,15 @@ MpgClient.prototype.init = function(onConnected) {
 
 
 /*
-
-	Public Mpg Methods
-
+		    ┌───────────────────┐
+		    │   client public	│
+		    └───────────────────┘
 */
 
 MpgClient.prototype.close = function() {
 	
 	this.websocket.close();
 };
-
-
-/*
-
-	Helpers
-
-*/
 
 MpgClient.prototype.getUserByName = function(name) {
 	
@@ -359,24 +338,9 @@ MpgClient.prototype.getChanUserList = function() {
 
 
 /*
-
-	Dispatcher
-
-*/
-
-MpgClient.prototype._dispatchChanUserList = function() {
-	
-	var list = this.getChanUserList();
-	
-	if (this.onChanUserList !== undefined)
-		this.onChanUserList(list);
-};
-			
-
-/*
-
-	Send messages
-
+		    ┌────────────────────────┐
+		    │   client public send	 │
+		    └────────────────────────┘
 */
 
 MpgClient.prototype.sendMsg = function(msg, userName) {
@@ -426,6 +390,13 @@ MpgClient.prototype.sendChanData = function(data) {
 	var d = {chanData : data};
 	this.websocket.send( JSON.stringify(d) );
 };
+
+
+/*
+		    ┌────────────────────────┐
+		    │   client public ask	 │
+		    └────────────────────────┘
+*/
 
 MpgClient.prototype.askChangeChan = function(chanName, chanPass) {
 	
@@ -481,10 +452,19 @@ MpgClient.prototype.askKick = function(userName) {
 
 
 /*
-
-	Private Mpg Methods
-
+		    ┌────────────────────┐
+		    │   client private	 │
+		    └────────────────────┘
 */
+
+MpgClient.prototype._dispatchChanUserList = function() {
+	
+	var list = this.getChanUserList();
+	
+	if (this.onChanUserList !== undefined)
+		this.onChanUserList(list);
+};
+	
 
 MpgClient.prototype._ask = function(label, data)
 {
@@ -692,13 +672,7 @@ MpgClient.prototype._setUserData = function(data, user) {
 
 				} else {
 
-					//delete(this.chan.users[user.data.name.toLowerCase()]);
-
 					this.chan.leave(user);
-					
-					/*if (this.onChanUserList !== undefined)
-						this.onChanUserList(this.chan.users);*/
-					
 					this._dispatchChanUserList();
 				}
 				
@@ -737,11 +711,11 @@ MpgClient.prototype._setChanData = function(data) {
 
 
 /*
-		┌───────────────────────────────┐
-		│								│
-		│			TRADUCTION			│
-		│								│
-		└───────────────────────────────┘
+		╔═══════════════════════════════╗
+		║								║
+		║			TRADUCTION			║
+		║								║
+		╚═══════════════════════════════╝
 */
 
 function MpgTrad (lang) {
@@ -753,86 +727,92 @@ function MpgTrad (lang) {
 }
 	
 
+/*
+		    ┌────────────────────┐
+		    │    trad private	 │
+		    └────────────────────┘
+*/
+
 MpgTrad.prototype._trads = {
 		
-		// System
-		0: {en: "Can not connect",
-			fr: "Connexion impossible"},
-	
-		1: {en: "Client undefined error ($1)",
-			fr: "Erreur client indéfinie ($1)"},
-	
-		2: {en: "Data parsing stopped: transferred data incomplete",
-			fr: "Analyse des données stoppé, données transférées incomplêtes"},
-	
-		3: {en: "You are connected!",
-			fr: "Vous êtes connecté !"},
-	
-		4: {en: "You are disconnected!",
-			fr: "Vous êtes déconnecté !"},
-	
-		5: {en: "Socket error: $1",
-			fr: "Erreur de socket : $1"},
-	
-		// Commands
-		101: {en: "Command label undefined ($1)",
-			  fr: "Commande indéfinie ($1)"},
-	
-		102: {en: "Unknown command ($1)",
-			  fr: "Commande inconnue ($1)"},
+	// System
+	0: {en: "Can not connect",
+		fr: "Connexion impossible"},
 
-		201: {en: "Message to user $1 error (text or user name empty)",
-			  fr: "Erreur d'envoie de message à l'utilisateur $1 (texte ou nom d'utilisateur manquant)"},
+	1: {en: "Client undefined error ($1)",
+		fr: "Erreur client indéfinie ($1)"},
 
-		// Users
-		301: {en: "The user $1 don't exist",
-			  fr: "L'utilisateur $1 n'existe pas"},
-	
-		302: {en: "You don't have permission to change chan data $1",
-			  fr: "Vous n'avez pas la permission de changer les données du salon $1"},
-	
-		303: {en: "You can only use alphanumeric, - and _ in an user name but you have write $1",
-			  fr: "Pour un nom d'utilisateur vous ne pouvez utiliser que des caractères latin standarts (minuscules, majuscules), des chiffres, des tirets et des underscores mais vous avez écris $1"},
-	
-		304: {en: "Name undefined",
-			  fr: "Nom indéfinis"},
-	
-		305: {en: "The name $1 is already used",
-			  fr: "Le nom $1 est déjà utilisé"},
+	2: {en: "Data parsing stopped: transferred data incomplete",
+		fr: "Analyse des données stoppé, données transférées incomplêtes"},
 
-		306: {en: "Name undefined",
-			  fr: "Nom indéfinis"},
+	3: {en: "You are connected!",
+		fr: "Vous êtes connecté !"},
 
-		307: {en: "You can't change your role",
-			  fr: "Vous ne pouvez pas changer votre rôle"},
-			  
-		308: {en: "A user event must have a label property ($1)",
-			  fr: "Un évênement utilisateur doit avoir une propriété \"label\" ($1)"},
+	4: {en: "You are disconnected!",
+		fr: "Vous êtes déconnecté !"},
 
-		// Chan
-		401: {en: "You don't have permission to change the pass of the chan",
-			  fr: "Vous n'avez pas la permission de changer le mot de passe du salon"},
-			  
-		402: {en: "The name $1 is already used",
-			  fr: "Le nom $1 est déjà utilisé"},
-			  
-		403: {en: "Name undefined",
-			  fr: "Nom indéfinis"},
-			  
-		404: {en: "You can only use alphanumeric, - and _ in an chan name but you have write $1",
-			  fr: "Pour un nom de salon vous ne pouvez utiliser que des caractères latin standarts (minuscules, majuscules), des chiffres, des tirets et des underscores mais vous avez écris $1"},
-	
-		405: {en: "A chan event must have a label property ($1)",
-			  fr: "Un évênement de salon doit avoir une propriété \"label\" ($1)"},
-			  
-		406: {en: "You can't join the chan $1",
-			  fr: "Vous n'êtes pas autorisé à rejoindre le salon $1)"},
-			  
-		// Messages
-		501: {en: "$1 change his name to $2",
-			  fr: "$1 s'appele désormais $2"}
-	
-	};
+	5: {en: "Socket error: $1",
+		fr: "Erreur de socket : $1"},
+
+	// Commands
+	101: {en: "Command label undefined ($1)",
+		  fr: "Commande indéfinie ($1)"},
+
+	102: {en: "Unknown command ($1)",
+		  fr: "Commande inconnue ($1)"},
+
+	201: {en: "Message to user $1 error (text or user name empty)",
+		  fr: "Erreur d'envoie de message à l'utilisateur $1 (texte ou nom d'utilisateur manquant)"},
+
+	// Users
+	301: {en: "The user $1 don't exist",
+		  fr: "L'utilisateur $1 n'existe pas"},
+
+	302: {en: "You don't have permission to change chan data $1",
+		  fr: "Vous n'avez pas la permission de changer les données du salon $1"},
+
+	303: {en: "You can only use alphanumeric, - and _ in an user name but you have write $1",
+		  fr: "Pour un nom d'utilisateur vous ne pouvez utiliser que des caractères latin standarts (minuscules, majuscules), des chiffres, des tirets et des underscores mais vous avez écris $1"},
+
+	304: {en: "Name undefined",
+		  fr: "Nom indéfinis"},
+
+	305: {en: "The name $1 is already used",
+		  fr: "Le nom $1 est déjà utilisé"},
+
+	306: {en: "Name undefined",
+		  fr: "Nom indéfinis"},
+
+	307: {en: "You can't change your role",
+		  fr: "Vous ne pouvez pas changer votre rôle"},
+
+	308: {en: "A user event must have a label property ($1)",
+		  fr: "Un évênement utilisateur doit avoir une propriété \"label\" ($1)"},
+
+	// Chan
+	401: {en: "You don't have permission to change the pass of the chan",
+		  fr: "Vous n'avez pas la permission de changer le mot de passe du salon"},
+
+	402: {en: "The name $1 is already used",
+		  fr: "Le nom $1 est déjà utilisé"},
+
+	403: {en: "Name undefined",
+		  fr: "Nom indéfinis"},
+
+	404: {en: "You can only use alphanumeric, - and _ in an chan name but you have write $1",
+		  fr: "Pour un nom de salon vous ne pouvez utiliser que des caractères latin standarts (minuscules, majuscules), des chiffres, des tirets et des underscores mais vous avez écris $1"},
+
+	405: {en: "A chan event must have a label property ($1)",
+		  fr: "Un évênement de salon doit avoir une propriété \"label\" ($1)"},
+
+	406: {en: "You can't join the chan $1",
+		  fr: "Vous n'êtes pas autorisé à rejoindre le salon $1)"},
+
+	// Messages
+	501: {en: "$1 change his name to $2",
+		  fr: "$1 s'appele désormais $2"}
+
+};
 
 MpgTrad.prototype.get = function(id, vars) {
 
@@ -854,4 +834,4 @@ MpgTrad.prototype.get = function(id, vars) {
 	
 	return raw;
 	
-}
+};
