@@ -20,11 +20,16 @@ var server = new Server();
 
 
 var WebSocketServer = require('ws').Server;
-var wss = new WebSocketServer({ port: config.port, host:config.host, path:config.path });
+var wss = new WebSocketServer({ port: config.port, host: config.host, path: config.path });
 
 wss.on('connection', function connection(ws) {
 	server.add(ws);
 });
+
+/*wss.on('error', function connection(ws) {
+	console.log("error?");
+	//server.add(ws);
+});*/
 
 /*
 

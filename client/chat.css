@@ -56,6 +56,12 @@ li {
 	border-radius: 8px 8px 0 0;
 	border-bottom: none;
 	padding: 4px 12px;
+	background-color: #AAA;
+}
+
+#page-tchat>ul>li.selected button {
+	
+	background-color: #CCC;
 }
 
 #tab-chans {
@@ -109,7 +115,11 @@ li {
 	padding: 20px;
 }
 
+#tab-chans .right li {
+	
+	display: block;
+}
 
 
 /* temp */
-#page-name { display: none; }
+/*#page-name { display: none; }*/
