@@ -26,16 +26,19 @@
 			<div id="tab-chans">
 				
 				<div class="left">
+					<h2>Dialogue</h2>
 					<div class="out"></div>
 					<div class="in">
 						<form action="">
 							<input id="msg" type="text" required autofocus placeholder="Message">
-							<input type="submit" value="Ok">
+							<input type="submit" value="Send">
 						</form>
 					</div>
 				</div>
 				<div class="right">
+					<h2>Members channel</h2>
 					<div class="users"></div>
+					<p class="num"></p>
 				</div>
 				
 			</div>
@@ -89,10 +92,12 @@
 			{
 				var t = "<ul>";
 				for(var i = 0; i<users.length; i++)
-					t += "<li>" + ((users[i].name === undefined) ? users[i] : users[i].name) + "</li>";
+					t += "<li><strong>" + users[i].data.name + "</strong></li>";
 				t += "</ul>";
 					
 				$("#tab-chans .right .users").html(t);
+				$("#tab-chans .right .num").html(users.length + " people");
+				
 			};
 			
 			$("#tab-chans").submit(function (e){

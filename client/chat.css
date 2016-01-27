@@ -1,3 +1,21 @@
+html, body {
+	
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+ul, li, p {
+	
+	margin: 0;
+	padding: 0;
+}
+
+li {
+	
+	display: inline-block;
+}
+
 #page-name {
 	
 	position: fixed;
@@ -14,19 +32,76 @@
 	flex-direction: column;
 }
 
+/*
+		CHAN
+*/
+
 #page-tchat {
 	
+	height: 100%;
 	
+	display: flex;
+	flex-direction: column;
+	align-content: stretch;
 }
 
-#page-tchat>ul>li {
+#page-tchat>ul {
 	
-	display: inline-block;
+	padding: 20px;
 }
-
-
 
 #tab-chans {
 	
+	flex: 1;
+	
+	display: flex;
+	align-content: stretch;
+	width: 100%;
+}
+
+#tab-chans .left {
+	
+	flex: 1;
+	align-self: stretch;
+	padding: 20px;
+	
+	
+	display: flex;
+	align-content: stretch;
+	flex-direction: column;
+}
+
+#tab-chans .left .out {
+	
+	flex: 1;
+}
+
+#tab-chans .left .in form {
+	
+	width: 100%;
+	display: flex;
+	align-content: stretch;
+}
+
+#tab-chans .left .in form input:first-child {
+	
+	flex: 1;
+}
+
+#tab-chans .left .in {
+	
+	display: flex;
+	align-content: stretch;
 	
 }
+
+#tab-chans .right {
+	
+	/*width: 200px;*/
+	padding: 20px;
+}
+
+
+
+/* temp */
+#page-name { display: none; }
