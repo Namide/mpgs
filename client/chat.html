@@ -69,13 +69,13 @@
 				$("#page-name").submit (function (e) {
 
 					e.preventDefault();
-					mpgc.askChangeUserName($("#name").val(), function (name) {
+					mpgc.askChangeUserName($("#name").val(), function () {
 
 						$("#page-name").hide();
 					});
 					return false;
 				});
-
+				
 				// DISPLAY CHAN TEXT
 				mpgc.onLog = function (message) {
 					
