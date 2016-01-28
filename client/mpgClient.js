@@ -765,8 +765,8 @@ MpgTrad.prototype._trads = {
 		  fr: "Erreur d'envoie de message à l'utilisateur $1 (texte ou nom d'utilisateur manquant)"},
 
 	// Users
-	301: {en: "The user $1 don't exist",
-		  fr: "L'utilisateur $1 n'existe pas"},
+	301: {en: "User not found",
+		  fr: "L'utilisateur n'a pas été trouvé"},
 
 	302: {en: "You don't have permission to change chan data $1",
 		  fr: "Vous n'avez pas la permission de changer les données du salon $1"},

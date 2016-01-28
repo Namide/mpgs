@@ -4,6 +4,7 @@
 	"path": "/mpgs",
 	"port": 8080,
 	
+	"debug": true,
 
 	"startChan": {
 		"data": {
