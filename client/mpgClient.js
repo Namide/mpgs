@@ -19,8 +19,6 @@ function MpgUser () {
 	
 	this.chan;
 	this.data = {};
-	
-	this.onChangeName;
 }
 
 
@@ -73,6 +71,12 @@ MpgChan.prototype.leave = function (user) {
 	}
 	
 	return false;
+};
+
+MpgChan.prototype.removeAll = function (user) {
+	
+	this.users = [];
+	this.data = {};
 };
 
 MpgChan.prototype.getUserByName = function (name) {
@@ -198,6 +202,21 @@ function MpgClient(URI, lang, onConnected) {
 		//this.onLog(msg);
 		this.onLog(this.trad.get(5, [msg]));
 	};
+	
+	
+	/*
+	
+			LISTENERS
+	
+	*/
+	
+	/**
+	 * Called when a name of user change
+	 * @param {User} user - user with new name
+	 */
+	this.onChangeUserName;
+	
+	
 	
 	
 	/*
@@ -343,40 +362,45 @@ MpgClient.prototype.getChanUserList = function() {
 		    └────────────────────────┘
 */
 
-MpgClient.prototype.sendMsg = function(msg, userName) {
+MpgClient.prototype.sendMsg = function(msg, user) {
 	
 	var d;
-	if (userName === undefined) {
+	if (user === undefined) {
 		
 		d = {chanMsg: msg};
 		
 	} else {
 		
-		d = {userMsg: {name: userName, text: msg} };
+		d = {userMsg: {to: user.data.id, text: msg} };
 	}
 	
 	this.websocket.send( JSON.stringify(d) );
 };
 
-MpgClient.prototype.sendUserEvt = function(label, data, userName) {
+MpgClient.prototype.sendUserEvt = function(label, data, user) {
 	
 	var d;
-	if (userName === undefined) {
+	if (user === undefined) {
 		
 		d = {userEvt: {label: label, data: data} };
 		
 	} else {
 		
-		d = {userEvt: {label: label, data: data, name:userName} };
+		d = {userEvt: {label: label, data: data, from: user.data.id} };
 	}
 	
 	this.websocket.send( JSON.stringify(d) );
 };
 
-MpgClient.prototype.sendUserData = function(data) {
+MpgClient.prototype.sendUserData = function(data, user) {
 	
-	var d = {userData : data};
-	this.websocket.send( JSON.stringify(d) );
+	var d = data;
+	if (user === undefined)
+		d.id = this.me.data.id;
+	else
+		d.id = user.data.id;
+	
+	this.websocket.send( JSON.stringify({userData : d}) );
 };
 
 MpgClient.prototype.sendChanEvt = function(label, data) {
@@ -405,11 +429,8 @@ MpgClient.prototype.askChangeChan = function(chanName, chanPass) {
 	//this._ask("set-user-chan", {name: chanName, pass: ((chanPass === undefined)?"":chanPass) });
 };
 
-MpgClient.prototype.askChangeUserName = function(newName, callback) {
-	//this._ask("set-user-name", newName);
-	//this._onChangeUserName = callback;
+MpgClient.prototype.askChangeUserName = function(newName) {
 	
-	this.me.onChangeName = callback;
 	this.sendUserData({name: newName});
 };
 
@@ -456,6 +477,41 @@ MpgClient.prototype.askKick = function(userName) {
 		    │   client private	 │
 		    └────────────────────┘
 */
+
+MpgClient.prototype._updateUser = function(userData) {
+	
+	if (this.me == undefined) {
+
+		this.me = new MpgUser();
+		this._setUserData(userData, this.me);
+		this.onMsgServer(this.trad.get(3));
+		return this.me;
+		
+	} else if (userData.id !== undefined) {
+
+		var u = this.getUserById(userData.id);
+		if (u !== null) {
+			
+			this._setUserData(userData, u);
+			
+		} else {
+
+			u = new MpgUser();
+			this._setUserData(userData, u);
+		}
+		
+		return u;
+		
+	} /*else if (d.name !== undefined && 
+			   this.getUserByName(d.name) !== null) {
+
+		var u = this.getUserByName(d.name);
+		this._setUserData(d, u);
+
+	}*/ 
+	
+	return null;
+};
 
 MpgClient.prototype._dispatchChanUserList = function() {
 	
@@ -526,24 +582,24 @@ MpgClient.prototype._parse = function(evt)
 	
 	if (msg.chanUserList !== undefined) {
 		
+		this.chan.removeAll();
+		
 		// Check if you have new players
 		var d = msg.chanUserList;
 		var i = d.length;
-		var ids = [];
 		while (--i > -1) {
 			
-			if (this.getUserById(d[i].id) == undefined) {
+			var u = this._updateUser(d[i]);
+			/*if (this.getUserById(d[i].id) == undefined) {
 				
 				var u = new MpgUser();
 				this._setUserData(d[i], u);
 				this.chan.join(u);
-			}
-			
-			ids.push(d[i].id);
+			}*/
 		}
 		
 		// check if players have leave the chan
-		var u = this.getChanUserList();
+		/*var u = this.getChanUserList();
 		i = u.length;
 		while (--i > -1) {
 			
@@ -551,7 +607,7 @@ MpgClient.prototype._parse = function(evt)
 				this.chan.leave(u[i]);
 				//this.chan.removeUserById(u[i].data.id);
 			}
-		}
+		}*/
 		
 		this._dispatchChanUserList();
 	}
@@ -608,29 +664,8 @@ MpgClient.prototype._parse = function(evt)
 	if (msg.userData !== undefined) {
 		
 		var d = msg.userData;
-		if (this.me == undefined) {
-			
-			this.me = new MpgUser();
-			this._setUserData(d, this.me);
-			this.onMsgServer(this.trad.get(3));
-			
-		} else if (d.id !== undefined &&
-				   this.getUserById(d.id) !== null) {
-			
-			var u = this.getUserById(d.id);
-			this._setUserData(d, u);
-			
-		} else if (d.name !== undefined && 
-				   this.getUserByName(d.name) !== null) {
-			
-			var u = this.getUserByName(d.name);
-			this._setUserData(d, u);
-			
-		} else {
-			
-			var u = new MpgUser();
-			this._setUserData(d, u);
-		}
+		this._updateUser(d);
+		
 	}
 	
 	if (msg.chanData !== undefined) {
@@ -650,8 +685,8 @@ MpgClient.prototype._setUserData = function(data, user) {
 			
 			user.data.name = data.name;
 			
-			if (user.onChangeName !== undefined)	
-				user.onChangeName(user.name, user);
+			if (this.onChangeUserName !== undefined)
+				this.onChangeUserName(user);
 			
 			this._dispatchChanUserList();
 			
@@ -789,6 +824,15 @@ MpgTrad.prototype._trads = {
 	308: {en: "A user event must have a label property ($1)",
 		  fr: "Un évênement utilisateur doit avoir une propriété \"label\" ($1)"},
 
+	309: {en: "You can't change the role of $1 if you are not moderator",
+		  fr: "Vous ne pouvez pas changer le role de $1 si vous n'êtes pas modérateur"},
+
+	310: {en: "You don't have permission to change data $1 of $2",
+		  fr: "Vous n'avez pas la permission de changer la donnée $1 de $2"},
+
+	311: {en: "You don't have permission to kick $1 from $2",
+		  fr: "Vous n'avez pas la permission d'expulser $1 du salon $2"},
+
 	// Chan
 	401: {en: "You don't have permission to change the pass of the chan",
 		  fr: "Vous n'avez pas la permission de changer le mot de passe du salon"},
@@ -810,7 +854,13 @@ MpgTrad.prototype._trads = {
 
 	// Messages
 	501: {en: "$1 change his name to $2",
-		  fr: "$1 s'appele désormais $2"}
+		  fr: "$1 s'appele désormais $2"},
+
+	502: {en: "$1 has been kicked by $2",
+		  fr: "$1 a été expulsé par $2"},
+
+	503: {en: "You have been kicked by $1",
+		  fr: "Vous avez été expulsé par $1"}
 
 };
 

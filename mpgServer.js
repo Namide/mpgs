@@ -41,7 +41,7 @@ wss.on('connection', function connection(ws) {
 		userMsg:		{from: $UserId, to: $UserId, text: $String}		# from disable for Client->Server, to disable fo Server->Client
 		serverMsg:		$String											# server -> client
 		
-		userEvt:		{from: $UserId, label: $String, data: $data}	# from disable for Client->Server
+		userEvt:		{from: $UserId, label: $String, data: $data}	# from facultative for Client->Server
 		chanEvt:		{label: $String, data: $data}
 		serverEvt:		{label: $String, data: $data}					# server -> client
 			ex: {label: "error", data: {id: $ErrorNum, vars:[]} }
