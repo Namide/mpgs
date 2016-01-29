@@ -558,7 +558,11 @@ MpgClient.prototype._parse = function(evt)
 	if (msg.chanMsg !== undefined) {
 		
 		var d = msg.chanMsg;
-		this.onMsgChan(d.name, d.text);
+		var u = this.getUserById(d.from);
+		if (u !== null)
+			this.onMsgChan(u.data.name, d.text);
+		else
+			this.onMsgChan("?", d.text);
 	}
 	
 	if (msg.serverMsg !== undefined) {
