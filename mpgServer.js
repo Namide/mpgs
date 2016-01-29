@@ -45,6 +45,8 @@ wss.on('connection', function connection(ws) {
 		chanEvt:		{label: $String, data: $data}
 		serverEvt:		{label: $String, data: $data}					# server -> client
 			ex: {label: "error", data: {id: $ErrorNum, vars:[]} }
+			ex: {label: "chan-added", data: {id: $chanId, name: $chanName} }
+			ex: {label: "chan-removed", $chanName }
 		
 		userData:		$Data											# id required
 		chanData:		$Data
