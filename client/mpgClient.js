@@ -324,7 +324,7 @@ MpgClient.prototype.close = function() {
 	this.websocket.close();
 };
 
-MpgClient.prototype.getUserByName = function(name) {
+MpgClient.prototype.getChanUserByName = function(name) {
 	
 	var u = this.chan.getUserByName(name);
 	if (u !== undefined)
@@ -336,7 +336,7 @@ MpgClient.prototype.getUserByName = function(name) {
 	return null;
 };
 
-MpgClient.prototype.getUserById = function(id) {
+MpgClient.prototype.getChanUserById = function(id) {
 	
 	var u = this.chan.getUserById(id);
 	if (u != undefined)
@@ -457,15 +457,15 @@ MpgClient.prototype.askChangeUserName = function(newName, callback) {
 MpgClient.prototype.askChangeChanName = function(newName) {
 	this.sendChanData({name: chanName});
 };
-
+/*
 MpgClient.prototype.askChangeChanPass = function(newPass) {
 	this._ask("set-chan-pass", newPass);
 };
 
-/*MpgClient.prototype.askUserData = function(userName) {
+MpgClient.prototype.askUserData = function(userName) {
 	this._ask("get-user-data", userName);
 };*/
-
+/*
 MpgClient.prototype.askListUser = function() {
 	this._ask("get-list-user");
 };
@@ -480,7 +480,7 @@ MpgClient.prototype.askListChan = function() {
 
 MpgClient.prototype.askListChanData = function() {
 	this._ask("get-list-chan-data");
-};
+};*/
 
 /*MpgClient.prototype.askChanData = function() {
 	this._ask("get-chan-data");
@@ -510,7 +510,7 @@ MpgClient.prototype._updateUser = function(data) {
 		
 	} else if (data.id !== undefined) {
 
-		var u = this.getUserById(data.id);
+		var u = this.getChanUserById(data.id);
 		if (u !== null) {
 			
 			this._setUserData(data, u);
@@ -523,23 +523,15 @@ MpgClient.prototype._updateUser = function(data) {
 		
 		return u;
 		
-	} /*else if (d.name !== undefined && 
-			   this.getUserByName(d.name) !== null) {
-
-		var u = this.getUserByName(d.name);
-		this._setUserData(d, u);
-
-	}*/ 
+	}
 	
 	return null;
 };
 
 MpgClient.prototype._dispatchChanUserList = function() {
 	
-	var list = this.getChanUserList();
-	
 	if (this.onChanUserList !== undefined)
-		this.onChanUserList(list);
+		this.onChanUserList(this.getChanUserList());
 };
 
 MpgClient.prototype._dispatchServerChanList = function() {
@@ -550,6 +542,7 @@ MpgClient.prototype._dispatchServerChanList = function() {
 
 MpgClient.prototype._dispatchConnected = function() {
 	
+	this.onMsgServer(this.trad.get(3));
 	if (this.onConnected !== undefined)
 		this.onConnected(this.me);
 };
@@ -589,7 +582,7 @@ MpgClient.prototype._parse = function(evt)
 	if (msg.chanMsg !== undefined) {
 		
 		var d = msg.chanMsg;
-		var u = this.getUserById(d.from);
+		var u = this.getChanUserById(d.from);
 		if (u !== null)
 			this.onMsgChan(u.data.name, d.text);
 		else
@@ -671,26 +664,6 @@ MpgClient.prototype._parse = function(evt)
 				
 				break;
 				
-			/*case "user-connected" :
-				
-				if (this.me === undefined) {
-					this.me = new MpgUser();
-					this._setUserData(d.data, this.me);
-				}
-				
-				this.onMsgServer(this.trad.get(3));
-				
-				break;
-			case "user-offline" :
-				
-				
-				var user = this.getUserById(d.data.user.id);
-				if (user !== undefined)
-					this.chan.users.splice(this.chan.users.indexOf(user), 1);
-				
-				this.onMsgServer(this.trad.get(4));
-				
-				break;*/
 			case "error" :
 				
 				this.onMsgServer(this.trad.get(d.data.id, d.data.vars));
@@ -699,7 +672,6 @@ MpgClient.prototype._parse = function(evt)
 			default :
 				
 				this.onMsgServer(this.trad.get(1, [d.label]));
-				//this.onEvtUser(d.label, d.data);
 		}
 		
 		
@@ -770,7 +742,7 @@ MpgClient.prototype._setUserData = function(data, user) {
 				
 			} else {
 				
-				var u = this.chan.getUserById(user.data.id);
+				var u = this.chan.getChanUserById(user.data.id);
 				if (u === null) {
 					
 					this.chan.join(user);
