@@ -8,99 +8,146 @@
 	</head>
 	<body>
 		
-		<div id="page-name">
-			<h1>Welcome on this t'chat</h1>
-			<form action="">
-				<input id="name" type="text" pattern="^[_A-Za-z0-9-]+$" required autofocus placeholder="Your name">
-				<input type="submit" value="Ok">
-			</form>
+		
+		<!-- <header>
+			T'Chat
+		</header> -->
+		
+		<div class="content">
+			
+			<!-- CHAN LIST -->
+			<div class="chans">
+				
+				<h2>Channels</h2>
+				<ul class="list">
+					
+				</ul>
+				<form action="">
+					<input id="chan" type="text" required autofocus placeholder="Create new chan">
+					<!-- <input type="submit" value="Send"> -->
+				</form>
+				
+			</div>
+			
+			<!-- MESSAGES -->
+			<div class="chat">
+				
+				<h2></h2>
+				
+				<div class="arrows">
+					<a class="open left-arrow"></a>
+					<a class="open right-arrow"></a>				
+				</div>
+				
+				<div class="out"></div>
+				<div class="in">
+					<form action="">
+						<input id="msg" type="text" required autofocus placeholder="Message">
+						<!-- <input type="submit" value="Send"> -->
+					</form>
+				</div>
+			</div>
+			
+			<!-- USER LIST -->
+			<div class="users">
+				
+				<form action="">
+					<input id="name" type="text" pattern="^[_A-Za-z0-9-]+$" required autofocus placeholder="Your name">
+					<!-- <input type="submit" value="Ok"> -->
+				</form>
+				
+				<h2>Users in channel</h2>
+				<ul class="list">
+					
+				</ul>
+				
+				<h2></h2>
+				<em class="num"></em>
+				
+			</div>
+			
 		</div>
 		
-		<div id="page-tchat">
-			<ul>
-				<li class="chans"><button type="button">Salons</button></li>
-				<li class="users"><button type="button">Connectés</button></li>
-				<li class="chan selected"><button type="button">Home</button></li>
-			</ul>
+		<footer>
 			
-			<div id="tab-chans">
-				
-				<div class="left">
-					<div class="out"></div>
-					<div class="in">
-						<form action="">
-							<input id="msg" type="text" required autofocus placeholder="Message">
-							<input type="submit" value="Send">
-						</form>
-					</div>
-				</div>
-				<div class="right">
-					<div class="users"></div>
-					<p class="num"></p>
-				</div>
-				
-			</div>
-			
-			<div id="tab-users">
-				
-			</div>
-			
-			<div id="tab-chan">
-				
-			</div>
-			
-		</div>
+		</footer>
 	
 	
 		<script type="text/javascript" src="jquery-2.2.0.min.js"></script>
 		<script type="text/javascript" src="mpgClient.js"></script>
 		<script language="javascript" type="text/javascript">
 			
+			
 			$(function(){
 			
-				var output = $("#tab-chans .out");
-				var input = $("#tab-chans .in #msg");
 				var mpgc = new MpgClient("ws://localhost:8080/mpgs", "fr", function() {
 
+					var output = $(".chat .out");
+				
+					
 					// DISPLAY CHAN LIST
 					this.getChans(function(list) {
 
-						var t = "<ul>";
+						/*var t = "";
 						for(var i = 0; i<list.length; i++)
-							t += "<li>" + list[i] + "</li>";
-						t += "</ul>";
-						$("#tab-chan").html(t);
-
+							t += '<li><a href="#" onclick="function() { mpgc.joinChan(\''+ list[i] + '\'); return false;}">' + list[i] + "</a></li>";
+						$(".chans .list").html(t);*/
+						
+						var ul = $(".chans .list");
+						ul.html("");
+						for(var i = 0; i<list.length; i++) {
+							
+							var a = $("<a>");
+							a.attr("href", "#");
+							a.onclick = function() { mpgc.joinChan(list[i]); return false; };
+							a.html(list[i]);
+							var li = $("<li>");
+							li.append(a);
+							ul.append(li);
+						}
+						/*	t += '<li><a href="#" onclick="function() { mpgc.joinChan(\''+ list[i] + '\'); return false;}">' + list[i] + "</a></li>";
+						
+						console.log(t);*/
 					});
 					
 					// DISPLAY CHAN TEXT
 					this.onLog = function (message) {
 
-						var pre = document.createElement("p");
+						/*var pre = document.createElement("p");
 						pre.style.wordWrap = "break-word";
 						pre.innerHTML = message;
-						output.append(pre);
+						output.append(pre);*/
+						
+						var p = $("<em>");
+						p.css("wordWrap", "break-word");
+						p.html(message);
+						output.append(p);
+						
 					};
 
 					// DISPLAY CHAN USER LIST
 					this.onChanUserList = function (users) {
 
-						var t = "<ul>";
+						var t = "";
 						for(var i = 0; i<users.length; i++)
-							t += "<li><strong>" + users[i].data.name + "</strong></li>";
-						t += "</ul>";
-
-						$("#tab-chans .right .users").html(t);
-						$("#tab-chans .right .num").html(users.length + " people");
+							t += '<li>' + users[i].data.name + "</li>";
+						
+						$(".users .list").html(t);
+						$(".users .num").html(users.length + " people");
 					};
 
 					// WRITE MESSAGE ON CHAN
 					this.onMsgChan = function (name, msg) {
 
-						var pre = document.createElement("p");
+						var p = $("<p>");
+						p.css("wordWrap", "break-word");
+						p.html("<strong>" + name + "</strong> : " + msg);
+						output.append(p);
+						
+						/*var pre = document.createElement("p");
 						pre.style.wordWrap = "break-word";
 						pre.innerHTML = "<strong>" + name + "</strong> : " + msg;
-						output.append(pre);
+						output.append(pre);*/
 					}
 					
 					
@@ -109,29 +156,44 @@
 				});
 				
 				// CHANGE NAME
-				$("#page-name").submit (function (e) {
+				$(".users").submit (function (e) {
 
 					e.preventDefault();
 					mpgc.askChangeUserName($("#name").val(), function () {
-
-						//$("#page-name").hide();
+						
+						$("#name").attr("placeholder", mpgc.me.data.name);
+						$("#name").val("");
+						//console.log("name changed");
 					});
 					return false;
 				});
 				
 				
-
-				// SEND CHAN TEXT
-				$("#tab-chans").submit(function (e){
+				$(".chans").submit(function (e){
 
 					e.preventDefault();
-					mpgc.sendMsg($("#msg").val());
-					$("#msg").val("");
+					var chan = $("#chan");
+					mpgc.joinChan(chan.val(), "", function() {
+						$(".chat h2").html(mpgc.chan.data.name);
+					});
+					chan.val("");
+					return false;
+				});
+				
+				// SEND CHAN TEXT
+				$(".chat .in").submit(function (e){
+
+					e.preventDefault();
+					var msgForm = $("#msg");
+					mpgc.sendMsg(msgForm.val());
+					msgForm.val("");
 					return false;
 				});
 				
 			});
 			
+			
+					
 			
 		</script>
 	</body>

@@ -260,6 +260,10 @@ function MpgClient(URI, lang, onConnected) {
 		this.onLog(label);
 	};
 	
+	this.onJoinChan = function(chan) {
+		
+	};
+	
 	this.onDataUser = function(user, data) {
 		//this.onLog(data);
 	};
@@ -428,21 +432,22 @@ MpgClient.prototype.sendChanData = function(data) {
 */
 
 MpgClient.prototype.getChans = function (callback) {
-		
+	
 	this.sendUserData({listenChans: true});
 	this.listChans = [];
 	this.onListChan = callback;
-	return this.listChans;
+	//return this.listChans;
 };
 
 MpgClient.prototype.stopListenChans = function (callback) {
-		
+	
 	this.sendUserData({listenChans: false});
 	this.onListChan = null;
 };
 
-MpgClient.prototype.askChangeChan = function (chanName, chanPass) {
+MpgClient.prototype.joinChan = function (chanName, chanPass, callback) {
 	
+	this.onJoinChan = callback;
 	this.sendUserData({chan:{name: chanName, pass: chanPass}});
 	
 	//this._ask("set-user-chan", {name: chanName, pass: ((chanPass === undefined)?"":chanPass) });
@@ -722,7 +727,8 @@ MpgClient.prototype._setUserData = function(data, user) {
 				
 				this.chan = new MpgChan();
 				this.chan.data.name = "";
-			}
+			
+			} 
 			
 			//console.log(data.chan.id+" "+this.chan.data.id);
 			
@@ -738,11 +744,16 @@ MpgClient.prototype._setUserData = function(data, user) {
 					//console.log("leave");
 					this.chan.leave(user);
 					this._dispatchChanUserList();
+					
+					if (user === this.me)
+						if (this.onJoinChan != undefined)
+							this.onJoinChan()
+			
 				}
 				
 			} else {
 				
-				var u = this.chan.getChanUserById(user.data.id);
+				var u = this.getChanUserById(user.data.id);
 				if (u === null) {
 					
 					this.chan.join(user);
@@ -768,15 +779,20 @@ MpgClient.prototype._setUserData = function(data, user) {
 
 MpgClient.prototype._setChanData = function(data) {
 	
+	var newChan = false;
 	if (this.chan === undefined || this.chan.data.id !== data.id) {
 		
 		this.chan = new MpgChan();
+		newChan = true;
 	}
 		
 	for (key in data) {
 
 		this.chan.data[key] = data[key];
 	}
+	
+	if (newChan && this.onJoinChan != undefined)
+		this.onJoinChan();
 	
 	if (this.onDataChan !== undefined)
 		this.onDataChan(data);
