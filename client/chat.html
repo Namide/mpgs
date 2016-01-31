@@ -21,7 +21,7 @@
 				<h2>Channels</h2>
 				<ul class="list"></ul>
 				<form action="">
-					<input id="chan" type="text" required autofocus placeholder="Create new chan">
+					<input id="chan" type="text" required autofocus placeholder="Create new chan" autocomplete="off">
 					<!-- <input type="submit" value="Send"> -->
 				</form>
 				
@@ -30,7 +30,7 @@
 			<!-- MESSAGES -->
 			<div class="chat">
 				
-				<h2></h2>
+				<h1></h1>
 				
 				<div class="arrows">
 					<a class="open left-arrow"></a>
@@ -40,7 +40,7 @@
 				<div class="out"></div>
 				<div class="in">
 					<form action="">
-						<input id="msg" type="text" required autofocus placeholder="Message">
+						<input id="msg" type="text" required autofocus placeholder="Message" autocomplete="off">
 						<!-- <input type="submit" value="Send"> -->
 					</form>
 				</div>
@@ -50,7 +50,7 @@
 			<div class="users open">
 				
 				<form action="">
-					<input id="name" type="text" pattern="^[_A-Za-z0-9-]+$" required autofocus placeholder="Your name">
+					<input id="name" type="text" pattern="^[_A-Za-z0-9-]+$" required autofocus placeholder="Your name" autocomplete="off">
 					<!-- <input type="submit" value="Ok"> -->
 				</form>
 				
@@ -98,6 +98,9 @@
 
 				function displayChans(list) {
 
+					console.log(list);
+					console.log(this.chan.data.name.toLowerCase());
+					
 					var ul = $(".chans .list");
 					ul.html("");
 					for(var i = 0; i<list.length; i++) {
@@ -106,6 +109,8 @@
 						addClickToChan(a, list[i]);
 
 						a.html(list[i]);
+						if (this.chan.data.name.toLowerCase() == list[i])
+							a.addClass("selected");
 						var li = $("<li>");
 						li.append(a);
 						ul.append(li);
@@ -130,26 +135,30 @@
 					
 					// DISPLAY CHAN NAME
 					this.onJoinChan = function() {
-						$(".chat h2").html(mpgc.chan.data.name);
+						
+						$(".chat h1").html(mpgc.chan.data.name);
+						output.html("");
 					}
 					
 					// DISPLAY CHAN TEXT
 					this.onLog = function (msg) {
 
 						addMsg("<em>" + msg + "</em>");
-						/*var p = $("<em>");
-						p.css("wordWrap", "break-word");
-						p.html(message);
-						output.append(p);
-						output.scrollTop = output.scrollHeight;*/
 					};
 
 					// DISPLAY CHAN USER LIST
 					this.onChanUserList = function (users) {
 
 						var t = "";
-						for(var i = 0; i<users.length; i++)
-							t += '<li>' + users[i].data.name + "</li>";
+						for(var i = 0; i<users.length; i++) {
+							if (this.me.data.name.toLowerCase() == users[i].data.name)
+								t += '<li class="selected">';
+							else
+								t += '<li>';
+							
+							t += users[i].data.name + "</li>";
+						}
+							
 						
 						$(".users .list").html(t);
 						$(".users .num").html(users.length + tl(" people", " personne" + ((users.length>1)?"s":"")));
@@ -187,7 +196,7 @@
 
 					e.preventDefault();
 					var chan = $("#chan");
-					mpgc.joinChan(chan.val(), "");
+					mpgc.joinChan(chan.val(), "", displayChans);
 					chan.val("");
 					return false;
 				});

@@ -12,9 +12,18 @@ html, body {
 	overflow: hidden;
 }
 
-body, h1, h2 {
+input[type="text"]:focus, input[type="password"]:focus, textarea:focus{
+	outline: none;
+}
+
+body, h2 {
 	
 	font: 15px arial, sans-serif;
+} 
+
+h1 {
+	
+	font: 22px arial, sans-serif;
 } 
 
 ul, li, p, button {
@@ -38,8 +47,12 @@ input {
 	color: #FFF;
 }
 
-a {
+.selected {
 	color: #8FDDFF;
+	background-color: #2D2E30;
+}
+
+a {
 	text-decoration: none;
 }
 
@@ -106,9 +119,12 @@ body>div.content {
 	flex: 1;
 }
 
-.chat h2 {
+.chat h1 {
 	
-	padding: 8px 32px;
+	padding: 12px 32px 12px;
+	border-bottom: 1px solid #343434;
+	background-color: #1c1c1e;
+	margin: 0;
 }
 
 .chat .out {
@@ -119,13 +135,12 @@ body>div.content {
 	vertical-align: text-bottom;
 }
 
-
 .chat .arrows {
 	
 	padding: 8px 4px;
 	display: flex;
 	justify-content: space-between;
-	margin-top: -44px;
+	margin-top: -42px;
 }
 
 .left-arrow:hover, .right-arrow:hover {

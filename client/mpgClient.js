@@ -434,8 +434,8 @@ MpgClient.prototype.sendChanData = function(data) {
 
 MpgClient.prototype.getChans = function (callback) {
 	
-	this.sendUserData({listenChans: true});
 	this.listChans = [];
+	this.sendUserData({listenChans: true});
 	this.onListChan = callback;
 };
 
@@ -552,6 +552,18 @@ MpgClient.prototype._dispatchConnected = function() {
 	this.onMsgServer(this.trad.get(3));
 	if (this.onConnected !== undefined)
 		this.onConnected(this.me);
+};
+
+MpgClient.prototype._dispatchChanChange = function() {
+	
+	if (this.onDataChan !== undefined)
+		this.onDataChan();
+	
+	if (this.onJoinChan !== undefined)
+		this.onJoinChan(this.chan);
+	
+	this._dispatchChanUserList();
+	this._dispatchServerChanList();
 };
 
 
@@ -792,10 +804,12 @@ MpgClient.prototype._setChanData = function(data) {
 	
 	if (newChan) {
 		
-		if (this.onJoinChan != undefined)
+		this._dispatchChanChange();
+					
+		/*if (this.onJoinChan != undefined)
 			this.onJoinChan(this.chan);
 		
-		this._dispatchChanUserList();
+		this._dispatchChanUserList();*/
 	}
 		
 	
