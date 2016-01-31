@@ -437,10 +437,9 @@ MpgClient.prototype.getChans = function (callback) {
 	this.sendUserData({listenChans: true});
 	this.listChans = [];
 	this.onListChan = callback;
-	//return this.listChans;
 };
 
-MpgClient.prototype.stopListenChans = function (callback) {
+MpgClient.prototype.stopListenChans = function () {
 	
 	this.sendUserData({listenChans: false});
 	this.onListChan = null;
@@ -448,7 +447,9 @@ MpgClient.prototype.stopListenChans = function (callback) {
 
 MpgClient.prototype.joinChan = function (chanName, chanPass, callback) {
 	
-	this.onJoinChan = callback;
+	if (callback !== undefined)
+		this.onJoinChan = callback;
+	
 	this.sendUserData({chan:{name: chanName, pass: chanPass}});
 	
 	//this._ask("set-user-chan", {name: chanName, pass: ((chanPass === undefined)?"":chanPass) });
