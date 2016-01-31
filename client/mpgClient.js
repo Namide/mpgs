@@ -33,7 +33,7 @@ function MpgUser () {
 		╚═══════════════════════════╝
 */
 
-function MpgChan () {
+function MpgChan (id) {
 
 	this.users = [];
 	this.data = {};
@@ -69,6 +69,7 @@ MpgChan.prototype.leave = function (user) {
 	var i = this.users.indexOf(user);
 	if (i > -1) {
 		this.users.splice(i, 1);
+		//this._dispatchChanUserList();
 		return true;
 	}
 	
@@ -169,7 +170,7 @@ MpgChan.prototype._getUserIndexByName = function (name) {
 		╚═══════════════════════════╝
 */
 
-function MpgClient(URI, lang, onConnected) {
+function MpgClient(URI, onConnected, lang) {
 
 	this.me;
 	this.chan;
@@ -722,32 +723,28 @@ MpgClient.prototype._setUserData = function(data, user) {
 			
 		} else if (key === "chan") {
 			
-					
+			// if not existe, create false chan
 			if (this.chan == undefined) {
 				
-				this.chan = new MpgChan();
+				this.chan = new MpgChan(-1);
 				this.chan.data.name = "";
-			
 			} 
-			
-			//console.log(data.chan.id+" "+this.chan.data.id);
 			
 			if (data.chan.id !== this.chan.data.id) {
 				
 				if (user === this.me) {
 
-					this.chan = new MpgChan();
-					this._setChanData(data.chan);	
+					// to do
+					//this._setChanData(data.chan);	
 
 				} else {
 
-					//console.log("leave");
 					this.chan.leave(user);
 					this._dispatchChanUserList();
 					
-					if (user === this.me)
+					/*if (user === this.me)
 						if (this.onJoinChan != undefined)
-							this.onJoinChan()
+							this.onJoinChan(this.chan)*/
 			
 				}
 				
@@ -774,25 +771,32 @@ MpgClient.prototype._setUserData = function(data, user) {
 		
 	}
 	
-	this.onDataUser(user, data);
+	if (this.onDataUser !== undefined)
+		this.onDataUser(user, data);
 };
 
 MpgClient.prototype._setChanData = function(data) {
 	
 	var newChan = false;
-	if (this.chan === undefined || this.chan.data.id !== data.id) {
+	if (this.chan === undefined || this.chan.data.id != data.id) {
 		
-		this.chan = new MpgChan();
+		this.chan = new MpgChan(data.id);
 		newChan = true;
 	}
-		
+	
 	for (key in data) {
-
+		
 		this.chan.data[key] = data[key];
 	}
 	
-	if (newChan && this.onJoinChan != undefined)
-		this.onJoinChan();
+	if (newChan) {
+		
+		if (this.onJoinChan != undefined)
+			this.onJoinChan(this.chan);
+		
+		this._dispatchChanUserList();
+	}
+		
 	
 	if (this.onDataChan !== undefined)
 		this.onDataChan(data);
@@ -810,12 +814,40 @@ MpgClient.prototype._setChanData = function(data) {
 
 function MpgTrad (lang) {
 	
-	this.lang = lang;
+	this.lang = lang || this.getLang();
 	
-	if (this._trads[0][lang] === undefined)
-		throw new Error("The language " + lang + " is not supported!");
+	if (this._trads[0][this.lang] == undefined)
+		throw new Error("The language " + this.lang + " is not supported!");
 }
+
+MpgTrad.prototype.getLang = function() {
 	
+	var l = (navigator.language || navigator.userLanguage).split('-')[0];
+			 
+	if (this._trads[0][l] != undefined) {
+		
+		return l;
+	}
+	
+	return "en";
+}
+
+MpgTrad.GetLang = function(langList) {
+	
+	var l = (navigator.language || navigator.userLanguage).split('-')[0];
+	
+	if (langList !== undefined) {
+		
+		if (langList.indexOf(l) > -1) {
+			
+			return l;
+		}
+		
+		return langList[0];
+	}
+	
+	return l;
+}
 
 /*
 		    ┌────────────────────┐

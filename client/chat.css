@@ -43,6 +43,7 @@ a {
 
 a:hover {
 	text-decoration: underline;
+	cursor: pointer;
 }
 
 body {
@@ -109,7 +110,7 @@ body>div.content {
 
 .left-arrow:hover, .right-arrow:hover {
 	
-	cursor: pointer;
+	/*cursor: pointer;*/
 }
 
 .left-arrow, .right-arrow {
