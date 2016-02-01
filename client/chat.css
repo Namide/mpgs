@@ -153,6 +153,19 @@ body>div.content {
 	background-color: #2D2E30;
 }
 
+/*
+
+		LEFT
+
+*/
+
+.users em {
+	
+	opacity: 0.5;
+	font-size: 14px;
+	float: right;
+}
+
 
 /*
 
@@ -185,7 +198,7 @@ body>div.content {
 
 .chat .arrows {
 	
-	padding: 8px 4px;
+	padding: 16px 4px;
 	display: flex;
 	justify-content: space-between;
 	margin-top: -42px;
@@ -207,13 +220,13 @@ body>div.content {
 	
 	position: relative;
 	/*background: #111;*/
-	width: 15px;
-	height: 15px;
+	width: 16px;
+	height: 16px;
 }
 
 .right-arrow:after, .left-arrow:after {
 	
-	top: 50%;
+	/*top: 50%;*/
 	border: solid transparent;
 	content: " ";
 	height: 0;
@@ -221,18 +234,18 @@ body>div.content {
 	position: absolute;
 	pointer-events: none;
 	border-color: rgba(136, 183, 213, 0);
-	border-width: 10px;
-	margin-top: -10px;
+	border-width: 8px;
+	margin-top: -8px;
 }
 
 .right-arrow.close:after, .left-arrow.open:after {
 	
-	border-right-color: #CCC;
-	left: -50%;
+	border-right-color: rgba(173, 181, 177, 0.5);
+	/*left: 0%;*/
 }
 
 .left-arrow.close:after, .right-arrow.open:after {
 
-	right: -50%;
-	border-left-color: #CCC;
+	/*right: 0%;*/
+	border-left-color: rgba(173, 181, 177, 0.5);
 }

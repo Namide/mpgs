@@ -97,7 +97,8 @@
 				}
 
 				function displayChans(list) {
-
+						
+					list.sort();
 					var ul = $(".chans .list");
 					ul.html("");
 					for(var i = 0; i<list.length; i++) {
@@ -145,6 +146,10 @@
 					// DISPLAY CHAN USER LIST
 					this.onChanUserList = function (users) {
 
+						users.sort(function(a, b) {
+							return a.data.name > b.data.name;
+						});
+						
 						var t = "";
 						for(var i = 0; i<users.length; i++) {
 							if (this.me.data.name == users[i].data.name)
