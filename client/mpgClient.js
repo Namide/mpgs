@@ -21,6 +21,8 @@ function MpgUser () {
 	this.data = {};
 	
 	this.onDataNameChange;
+	this.onDataChange;
+	this.onLeave;
 }
 
 
@@ -37,6 +39,7 @@ function MpgChan (id) {
 
 	this.users = [];
 	this.data = {};
+	
 }
 
 
@@ -183,54 +186,32 @@ function MpgClient(URI, onConnected, lang) {
 	
 	
 	this.onLog = function(msg) {
-		console.log(msg);
+		//console.log(msg);
 	};
 	
 	
 	/*
 	
-			CLIENT SYSTEM MESSAGES
+			LISTENER
 			
 	*/
 	
-	/*this.onServerOpen = function(msg) {
-		//this.onLog("socket open");
-		//console.log(msg);
-	};*/
-	
-	this.onServerClose = function(msg) {
+	this.onClose = function(msg) {
 		//this.onLog("socket closed");
 	};
 	
-	this.onServerError = function(msg) {
-		//this.onLog(msg);
-		this.onLog(this.trad.get(5, [msg]));
+	this.onError = function(msg) {
+		
+		this.onLog(msg);
 	};
 	
-	
-	/*
-	
-			LISTENERS
-	
-	*/
-	
-	//this.onChangeUserName;
-	
-	
-	
-	
-	
-	/*
-	
-			SERVER MESSAGES
-			
-	*/
-	
 	this.onMsgUser = function(name, msg) {
+		
 		this.onLog(name + ":" + msg);
 	};
 	
-	this.onMsgChan = function(name, msg) {
+	this.onChanMsg = function(name, msg) {
+		
 		if (name === undefined)
 			this.onLog(msg);
 		else
@@ -245,48 +226,33 @@ function MpgClient(URI, onConnected, lang) {
 		this.onLog(list);
 	};
 	
-	this.onListUser = function(list) {
-		this.onLog(list);
-	};
-	
 	this.onEvtUser = function(user, label, data) {
 		this.onLog(label);
 	};
 	
-	this.onEvtChan = function(label, data) {
+	this.onChanEvt = function(label, data) {
 		this.onLog(label);
 	};
 	
-	this.onEvtServer = function(label, data) {
+	this.onServerEvt = function(label, data) {
 		this.onLog(label);
 	};
 	
-	this.onJoinChan = function(chan) {
+	this.onChanChange = function(chan) {
 		
-	};
-	
-	this.onDataUser = function(user, data) {
-		//this.onLog(data);
 	};
 	
 	this.onConnected = function(user) {
 		//this.onLog(data);
 	};
 	
-	this.onDataChan = function(data) {
+	this.onChanDataChange = function(data) {
 		//this.onLog(data);
 	};
 	
 	this.onChanUserList = function(list) {
 		this.onLog(list);
 	};
-	
-	this.serverChanList = function(list) {
-		this.onLog(list);
-	};
-	
-	
-	
 	
 	this.init(onConnected);
 }
@@ -308,9 +274,9 @@ MpgClient.prototype.init = function(onConnected) {
 		this.onConnected = onConnected;
 		
 	//this.websocket.onopen = function(evt) { onConnected(mpgClient); };
-	this.websocket.onclose = function(evt) { mpgClient.onServerClose(evt.data) };
+	this.websocket.onclose = function(evt) { mpgClient.onClose(evt.data) };
 	this.websocket.onmessage = function(evt) { mpgClient._parse(evt); };
-	this.websocket.onerror = function(evt) { mpgClient.onServerError(evt.data); };
+	this.websocket.onerror = function(evt) { mpgClient.onError(this.trad.get(5, [evt.data])); };
 	
 	window.addEventListener("beforeunload", function(e){ mpgClient.close(); }, false);
 };
@@ -447,21 +413,18 @@ MpgClient.prototype.stopListenChans = function () {
 
 MpgClient.prototype.joinChan = function (chanName, chanPass, callback) {
 	
-	if (callback !== undefined)
-		this.onJoinChan = callback;
-	
 	this.sendUserData({chan:{name: chanName, pass: chanPass}});
 	
 	//this._ask("set-user-chan", {name: chanName, pass: ((chanPass === undefined)?"":chanPass) });
 };
 
-MpgClient.prototype.askChangeUserName = function(newName, callback) {
+MpgClient.prototype.changeUserName = function(newName, callback) {
 	
 	this.me.onDataNameChange = callback;
 	this.sendUserData({name: newName});
 };
 
-MpgClient.prototype.askChangeChanName = function(newName) {
+MpgClient.prototype.changeChanName = function(newName) {
 	this.sendChanData({name: chanName});
 };
 /*
@@ -505,34 +468,37 @@ MpgClient.prototype.askKick = function(userName) {
 		    └────────────────────┘
 */
 
-MpgClient.prototype._updateUser = function(data) {
+MpgClient.prototype._updateUser = function(data, dispatch) {
+	
+	if (dispatch === undefined)
+		dispatch = true;
 	
 	if (this.me == undefined) {
 
 		this.me = new MpgUser();
-		this._setUserData(data, this.me);
-		//this.onMsgServer(this.trad.get(3));
-		this._dispatchConnected();
+		this._setUserData(data, this.me, false);
+		
+		if (dispatch)
+			this._dispatchConnected();
+		
 		return this.me;
-		
-	} else if (data.id !== undefined) {
-
-		var u = this.getChanUserById(data.id);
-		if (u !== null) {
-			
-			this._setUserData(data, u);
-			
-		} else {
-
-			u = new MpgUser();
-			this._setUserData(data, u);
-		}
-		
-		return u;
-		
 	}
 	
-	return null;
+	var u = this.getChanUserById(data.id);
+	if (u !== null) {
+
+		this._setUserData(data, u);
+
+	} else {
+
+		u = new MpgUser();
+		this._setUserData(data, u);
+		
+		if (dispatch)
+			this._dispatchChanUserList();
+	}
+
+	return u;
 };
 
 MpgClient.prototype._dispatchChanUserList = function() {
@@ -556,11 +522,11 @@ MpgClient.prototype._dispatchConnected = function() {
 
 MpgClient.prototype._dispatchChanChange = function() {
 	
-	if (this.onDataChan !== undefined)
-		this.onDataChan();
+	if (this.onChanDataChange !== undefined)
+		this.onChanDataChange(this.chan.data);
 	
-	if (this.onJoinChan !== undefined)
-		this.onJoinChan(this.chan);
+	if (this.onChanChange !== undefined)
+		this.onChanChange(this.chan);
 	
 	this._dispatchChanUserList();
 	this._dispatchServerChanList();
@@ -584,7 +550,7 @@ MpgClient.prototype._parse = function(evt)
 		
 	} catch(e) {
 		
-		this.onServerError(this.trad.get(2));
+		this.onError(this.trad.get(2));
 		return;
 	}
 	
@@ -603,9 +569,9 @@ MpgClient.prototype._parse = function(evt)
 		var d = msg.chanMsg;
 		var u = this.getChanUserById(d.from);
 		if (u !== null)
-			this.onMsgChan(u.data.name, d.text);
+			this.onChanMsg(u.data.name, d.text);
 		else
-			this.onMsgChan("?", d.text);
+			this.onChanMsg("?", d.text);
 	}
 	
 	if (msg.serverMsg !== undefined) {
@@ -626,7 +592,7 @@ MpgClient.prototype._parse = function(evt)
 		
 		var d = msg.chanEvt;
 		
-		this.onEvtChan(d.label, d.data);
+		this.onChanEvt(d.label, d.data);
 	}
 	
 	if (msg.chanUserList !== undefined) {
@@ -638,7 +604,7 @@ MpgClient.prototype._parse = function(evt)
 		var list = [];
 		while (--i > -1) {
 			
-			var u = this._updateUser(d[i]);
+			var u = this._updateUser(d[i], false);
 			if (u !== this.me)
 				list.push(u);
 		}
@@ -685,12 +651,12 @@ MpgClient.prototype._parse = function(evt)
 				
 			case "error" :
 				
-				this.onMsgServer(this.trad.get(d.data.id, d.data.vars));
+				this.onError(this.trad.get(d.data.id, d.data.vars));
 				
 				break;
 			default :
 				
-				this.onMsgServer(this.trad.get(1, [d.label]));
+				this.onServerEvt(this.trad.get(1, [d.label]));
 		}
 		
 		
@@ -715,10 +681,25 @@ MpgClient.prototype._parse = function(evt)
 	}
 };
 
-MpgClient.prototype._setUserData = function(data, user) {
+/*MpgClient.prototype._createChan = function(data) {
+
+	if (data.id === undefined || data.name === undefined) {
+		
+		console.log("Not enouth data to create chan");
+		return;
+	}
 	
-	if (data.id !== undefined)
-		user.data.id = data.id;
+	this.chan = new MpgChan(data.id);
+	this.chan.data.name = data.name;
+	this._setChanData(data);
+}*/
+
+MpgClient.prototype._setUserData = function(data, user, dispatch) {
+	
+	if (dispatch === undefined)
+		dispatch = true;
+	
+	user.data.id = data.id;
 	
 	for (key in data) {
 		
@@ -726,66 +707,48 @@ MpgClient.prototype._setUserData = function(data, user) {
 			
 			user.data.name = data.name;
 			
-			/*if (this.onChangeUserName !== undefined)
-				this.onChangeUserName(user);*/
-			
-			if (user.onDataNameChange !== undefined)
-				user.onDataNameChange();
-			
-			this._dispatchChanUserList();
+			if (dispatch) {
+				
+				if (user.onDataNameChange !== undefined)
+					user.onDataNameChange();
+
+				this._dispatchChanUserList();
+			}
 			
 		} else if (key === "chan") {
 			
-			// if not existe, create false chan
-			if (this.chan == undefined) {
+			if (user !== this.me) {
 				
-				this.chan = new MpgChan(-1);
-				this.chan.data.name = "";
-			} 
-			
-			if (data.chan.id !== this.chan.data.id) {
-				
-				if (user === this.me) {
-
-					// to do
-					//this._setChanData(data.chan);	
-
-				} else {
+				if (data.chan.id !== this.chan.data.id) {
 
 					this.chan.leave(user);
-					this._dispatchChanUserList();
-					
-					/*if (user === this.me)
-						if (this.onJoinChan != undefined)
-							this.onJoinChan(this.chan)*/
-			
-				}
-				
-			} else {
-				
-				var u = this.getChanUserById(user.data.id);
-				if (u === null) {
-					
-					this.chan.join(user);
-					this._dispatchChanUserList();
+
+					if (dispatch)
+						this._dispatchChanUserList();
+
+					return;
 					
 				} else {
-					
-					delete(data[key]);
+
+					this.chan.join(user);
+
+					if (dispatch)
+						this._dispatchChanUserList();
+
+					return;
 				}
-					
 			}
 			
 		} else {
 			
 			user.data[key] = data[key];
-		
 		}
-		
 	}
 	
-	if (this.onDataUser !== undefined)
-		this.onDataUser(user, data);
+	if (dispatch && user.onDataChange !== undefined)
+		user.onDataChange();
+	/*if (this.onDataUser !== undefined)
+		this.onDataUser(user, data);*/
 };
 
 MpgClient.prototype._setChanData = function(data) {
@@ -805,16 +768,11 @@ MpgClient.prototype._setChanData = function(data) {
 	if (newChan) {
 		
 		this._dispatchChanChange();
-					
-		/*if (this.onJoinChan != undefined)
-			this.onJoinChan(this.chan);
 		
-		this._dispatchChanUserList();*/
+	} else if (this.onChanDataChange !== undefined) {
+		
+		this.onChanDataChange(data);
 	}
-		
-	
-	if (this.onDataChan !== undefined)
-		this.onDataChan(data);
 };
 
 

@@ -6,30 +6,27 @@
 	
 	"debug": true,
 
-	"startChan": {
-		"data": {
+	"chan": {
+		"start": {
 			"name": "home",
 			"userMin": 0,
 			"userMax": 1000000,
 			"moderationEnabled": false
-		}
-	},
-	
-
-	"defaultChan": {
-		"data": {
+		},
+		"default": {
 			"userMin": 1,
 			"userMax": 100,
 			"moderationEnabled": true
 		}
 	},
 	
-
-	"defaultUser": {
-		"data": {
+	"user": {
+		"default": {
 			"name": "guest",
 			"role": "user"
+		},
+		"private": {
+			"listenChans": true
 		}
 	}
-	
 }

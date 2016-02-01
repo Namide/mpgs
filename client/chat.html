@@ -18,12 +18,12 @@
 			<!-- CHAN LIST -->
 			<div class="chans open">
 				
-				<h2>Channels</h2>
-				<ul class="list"></ul>
 				<form action="">
-					<input id="chan" type="text" required autofocus placeholder="Create new chan" autocomplete="off">
+					<input id="chan" type="text" required placeholder="Create new chan" autocomplete="off">
 					<!-- <input type="submit" value="Send"> -->
 				</form>
+				<h2>Channels</h2>
+				<ul class="list"></ul>
 				
 			</div>
 			
@@ -50,7 +50,7 @@
 			<div class="users open">
 				
 				<form action="">
-					<input id="name" type="text" pattern="^[_A-Za-z0-9-]+$" required autofocus placeholder="Your name" autocomplete="off">
+					<input id="name" type="text" pattern="^[_A-Za-z0-9-]+$" required placeholder="Your name" autocomplete="off">
 					<!-- <input type="submit" value="Ok"> -->
 				</form>
 				
@@ -78,7 +78,7 @@
 				return (LANG === "fr") ? fr : en;
 			}
 			$(".content>.chans>h2").html(tl("Channels", "Salons"));
-			$("#chan").attr("placeholder", tl("Create new Channel", "Crée ton salon"));
+			$("#chan").attr("placeholder", tl("Create new Channel", "Crée un nouveau salon"));
 			$("#name").attr("placeholder", tl("Change your name", "Change ton nom"));
 			$(".users>h2:first").html(tl("Users in channel", "Utilisateurs dans le salon"));
 			
@@ -98,21 +98,18 @@
 
 				function displayChans(list) {
 
-					console.log(list);
-					console.log(this.chan.data.name.toLowerCase());
-					
 					var ul = $(".chans .list");
 					ul.html("");
 					for(var i = 0; i<list.length; i++) {
 
-						var a = $("<a>");
-						addClickToChan(a, list[i]);
-
-						a.html(list[i]);
-						if (this.chan.data.name.toLowerCase() == list[i])
-							a.addClass("selected");
 						var li = $("<li>");
-						li.append(a);
+						addClickToChan(li, list[i]);
+
+						li.html(list[i]);
+						if (this.chan.data.name == list[i])
+							li.addClass("selected");
+						//var li = $("<li>");
+						//li.append(a);
 						ul.append(li);
 					}
 				}
@@ -129,12 +126,11 @@
 				// INIT SOCKET CLIENT
 				var mpgc = new MpgClient("ws://localhost:8080/mpgs", function() {
 
-					
 					// DISPLAY CHAN LIST
 					this.getChans(displayChans);
 					
 					// DISPLAY CHAN NAME
-					this.onJoinChan = function() {
+					this.onChanChange = function() {
 						
 						$(".chat h1").html(mpgc.chan.data.name);
 						output.html("");
@@ -151,7 +147,7 @@
 
 						var t = "";
 						for(var i = 0; i<users.length; i++) {
-							if (this.me.data.name.toLowerCase() == users[i].data.name)
+							if (this.me.data.name == users[i].data.name)
 								t += '<li class="selected">';
 							else
 								t += '<li>';
@@ -165,28 +161,20 @@
 					};
 
 					// WRITE MESSAGE ON CHAN
-					this.onMsgChan = function (name, msg) {
+					this.onChanMsg = function (name, msg) {
 
 						addMsg("<strong>" + name + "</strong>: " + msg);
-						/*var p = $("<p>");
-						p.css("wordWrap", "break-word");
-						p.html("<strong>" + name + "</strong> : " + msg);
-						output.append(p);
-						output.scrollTop = output.scrollHeight;*/
 					}
-
-					//console.log("Client connected to server");
 				});
 				
 				// CHANGE NAME
 				$(".users").submit (function (e) {
 
 					e.preventDefault();
-					mpgc.askChangeUserName($("#name").val(), function () {
+					mpgc.changeUserName($("#name").val(), function () {
 						
 						$("#name").attr("placeholder", mpgc.me.data.name);
 						$("#name").val("");
-						//console.log("name changed");
 					});
 					return false;
 				});
