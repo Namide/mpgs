@@ -140,8 +140,10 @@
 				}
 				
 				// INIT SOCKET CLIENT
-				var mpgc = new MpgClient("ws://localhost:8080/mpgs", function() {
-
+				var mpgc = new MpgClient("ws://localhost:8080/chat", function() {
+				//var mpgc = new MpgClient("ws://192.75.3.1:8000/mpgs", function() {
+					
+					
 					// DISPLAY CHAN LIST
 					this.getChans(displayChans);
 					
@@ -165,19 +167,21 @@
 							return a.data.name > b.data.name;
 						});
 						
-						var t = "";
+						var list = $(".users .list");
+						list.html("");
+						
 						for(var i = 0; i<users.length; i++) {
 							
-							if (this.me.data.name == users[i].data.name)
-								t += '<li class="selected">';
-							else
-								t += '<li>';
+							var name = users[i].data.name;
+							var li = $("<li>")
+							if (this.me.data.name == name)
+								li.addClass("selected");
 							
-							t += users[i].data.name + "</li>";
+							li.css("color", "#" + strToColor(name));
+							li.html(name);
+							list.append(li);
 						}
-							
 						
-						$(".users .list").html(t);
 						$(".users .num").html(users.length + tl(" people", " personne" + ((users.length>1)?"s":"")));
 					};
 
