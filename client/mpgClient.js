@@ -416,8 +416,6 @@ MpgClient.prototype.stopListenChans = function () {
 MpgClient.prototype.joinChan = function (chanName, chanPass, callback) {
 	
 	this.sendUserData({chan:{name: chanName, pass: chanPass}});
-	
-	//this._ask("set-user-chan", {name: chanName, pass: ((chanPass === undefined)?"":chanPass) });
 };
 
 MpgClient.prototype.changeUserName = function(newName, callback) {
@@ -723,7 +721,7 @@ MpgClient.prototype._setUserData = function(data, user, dispatch) {
 				if (user.onDataNameChange !== undefined && data.name !== oldName)
 					user.onDataNameChange();
 				
-				if (oldName !== undefined)
+				if (oldName !== undefined && oldName !== data.name)
 					this.onServerMsg(this.trad.get(501, [oldName, data.name]));
 
 				this._dispatchChanUserList();

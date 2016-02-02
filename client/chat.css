@@ -196,6 +196,11 @@ body>div.content {
 	vertical-align: text-bottom;
 }
 
+.chat .out > p {
+	
+	padding: 2px 0;
+}
+
 .chat .arrows {
 	
 	padding: 16px 4px;
@@ -203,6 +208,12 @@ body>div.content {
 	justify-content: space-between;
 	margin-top: -42px;
 }
+
+.msg-name { color: #5a72a7; }
+.msg-me { font-weight: bold; }
+.msg-server { opacity: 0.3; }
+.msg-error { color: #dc322f; }
+
 
 
 /*

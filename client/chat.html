@@ -19,7 +19,7 @@
 			<div class="chans open">
 				
 				<form action="">
-					<input id="chan" type="text" required placeholder="Create new chan" autocomplete="off">
+					<input id="chan" type="text" pattern="^[_A-Za-z0-9-]+$" required placeholder="Create new chan" autocomplete="off">
 					<!-- <input type="submit" value="Send"> -->
 				</form>
 				<h2>Channels</h2>
@@ -82,6 +82,21 @@
 			$("#name").attr("placeholder", tl("Change your name", "Change ton nom"));
 			$(".users>h2:first").html(tl("Users in channel", "Utilisateurs dans le salon"));
 			
+			function strToColor(str) {
+				
+				var n = 0;
+				for(var i = 0; i < str.length; i++) {
+					
+					n += str.charCodeAt(i) << i;
+				}
+				n = Math.floor(n * Math.PI * 0xF000);
+				var c = (n & 0xFFFFFF).toString(16);
+				
+				while(c.length < 6)
+					c = "0" + c;
+				
+				return c;
+			}
 			
 			$(function(){
 			
@@ -152,6 +167,7 @@
 						
 						var t = "";
 						for(var i = 0; i<users.length; i++) {
+							
 							if (this.me.data.name == users[i].data.name)
 								t += '<li class="selected">';
 							else
@@ -168,7 +184,9 @@
 					// WRITE MESSAGE ON CHAN
 					this.onChanMsg = function (name, msg) {
 
-						addMsg("<strong class='msg-name'>" + name + "</strong>: <span class='msg-body'>" + msg + "</span>");
+						console.log(name + " " + this.me.data.name);
+						console.log(name === this.me.data.name);
+						addMsg("<strong class='msg-name' style='color: #" + strToColor(name) + ";'>" + name + "</strong>: <span class='msg-body" + ((name === this.me.data.name) ? "  msg-me" : "") + "'>" + msg + "</span>");
 					}
 					
 					// WRITE SERVER MESSAGE ON CHAN
