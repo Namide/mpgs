@@ -86,7 +86,7 @@
 			$(function(){
 			
 				var output = $(".chat .out");
-					
+				
 				// DISPLAY CHANS
 				function addClickToChan (tag, chanName) {
 
@@ -123,7 +123,7 @@
 					output.append(p);
 					output.scrollTop = output.scrollHeight;
 				}
-
+				
 				// INIT SOCKET CLIENT
 				var mpgc = new MpgClient("ws://localhost:8080/mpgs", function() {
 
@@ -168,8 +168,21 @@
 					// WRITE MESSAGE ON CHAN
 					this.onChanMsg = function (name, msg) {
 
-						addMsg("<strong>" + name + "</strong>: " + msg);
+						addMsg("<strong class='msg-name'>" + name + "</strong>: <span class='msg-body'>" + msg + "</span>");
 					}
+					
+					// WRITE SERVER MESSAGE ON CHAN
+					this.onServerMsg = function (msg) {
+
+						addMsg("<em class='msg-server'>" + msg + "</em>");
+					}
+					
+					// WRITE ERROR MESSAGE ON CHAN
+					this.onError = function (msg) {
+
+						addMsg("<em class='msg-error'>" + msg + "</em>");
+					}
+					
 				});
 				
 				// CHANGE NAME

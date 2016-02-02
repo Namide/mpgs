@@ -218,7 +218,7 @@ function MpgClient(URI, onConnected, lang) {
 			this.onLog(name + ":" + msg);
 	};
 	
-	this.onMsgServer = function(msg) {
+	this.onServerMsg = function(msg) {
 		this.onLog(msg);
 	};
 	
@@ -401,13 +401,15 @@ MpgClient.prototype.sendChanData = function(data) {
 MpgClient.prototype.getChans = function (callback) {
 	
 	this.listChans = [];
-	this.sendUserData({listenChans: true});
+	//this.sendUserData({listenChans: true});
+	this.sendUserEvt("chan-listen", true);
 	this.onListChan = callback;
 };
 
 MpgClient.prototype.stopListenChans = function () {
 	
-	this.sendUserData({listenChans: false});
+	//this.sendUserData({listenChans: false});
+	this.sendUserEvt("chan-listen", false);
 	this.onListChan = null;
 };
 
@@ -481,6 +483,8 @@ MpgClient.prototype._updateUser = function(data, dispatch) {
 		if (dispatch)
 			this._dispatchConnected();
 		
+		this.onServerMsg(this.trad.get(3));
+		
 		return this.me;
 	}
 	
@@ -515,7 +519,6 @@ MpgClient.prototype._dispatchServerChanList = function() {
 
 MpgClient.prototype._dispatchConnected = function() {
 	
-	this.onMsgServer(this.trad.get(3));
 	if (this.onConnected !== undefined)
 		this.onConnected(this.me);
 };
@@ -576,7 +579,7 @@ MpgClient.prototype._parse = function(evt)
 	
 	if (msg.serverMsg !== undefined) {
 		
-		this.onMsgServer(msg.serverMsg);
+		this.onServerMsg(msg.serverMsg);
 	}
 	
 	
@@ -649,11 +652,18 @@ MpgClient.prototype._parse = function(evt)
 				
 				break;
 				
+			case "msg" :
+				
+				this.onServerMsg(this.trad.get(d.data.id, d.data.vars));
+				
+				break;
+				
 			case "error" :
 				
 				this.onError(this.trad.get(d.data.id, d.data.vars));
 				
 				break;
+				
 			default :
 				
 				this.onServerEvt(this.trad.get(1, [d.label]));
@@ -705,12 +715,16 @@ MpgClient.prototype._setUserData = function(data, user, dispatch) {
 		
 		if (key === "name") {
 			
+			var oldName = user.data.name;
 			user.data.name = data.name;
 			
 			if (dispatch) {
 				
-				if (user.onDataNameChange !== undefined)
+				if (user.onDataNameChange !== undefined && data.name !== oldName)
 					user.onDataNameChange();
+				
+				if (oldName !== undefined)
+					this.onServerMsg(this.trad.get(501, [oldName, data.name]));
 
 				this._dispatchChanUserList();
 			}
@@ -723,6 +737,8 @@ MpgClient.prototype._setUserData = function(data, user, dispatch) {
 
 					this.chan.leave(user);
 
+					this.onServerMsg(this.trad.get(504, [user.data.name, this.chan.data.name]));
+
 					if (dispatch)
 						this._dispatchChanUserList();
 
@@ -731,6 +747,8 @@ MpgClient.prototype._setUserData = function(data, user, dispatch) {
 				} else {
 
 					this.chan.join(user);
+
+					this.onServerMsg(this.trad.get(505, [user.data.name, this.chan.data.name]));
 
 					if (dispatch)
 						this._dispatchChanUserList();
@@ -920,7 +938,13 @@ MpgTrad.prototype._trads = {
 		  fr: "$1 a été expulsé par $2"},
 
 	503: {en: "You have been kicked by $1",
-		  fr: "Vous avez été expulsé par $1"}
+		  fr: "Vous avez été expulsé par $1"},
+
+  	504: {en: "$1 leave the chan $2",
+		  fr: "$1 a quitté le salon $2"},
+
+  	505: {en: "$1 join the chan $2",
+		  fr: "$1 a rejoind le salon $2"}
 
 };
 
