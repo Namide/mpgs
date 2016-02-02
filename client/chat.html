@@ -136,12 +136,12 @@
 					p.css("wordWrap", "break-word");
 					p.html(msg);
 					output.append(p);
-					output.scrollTop = output.scrollHeight;
+					output.scrollTop(output.height());
+					console.log();
 				}
 				
 				// INIT SOCKET CLIENT
 				var mpgc = new MpgClient("ws://localhost:8080/chat", function() {
-				//var mpgc = new MpgClient("ws://192.75.3.1:8000/mpgs", function() {
 					
 					
 					// DISPLAY CHAN LIST
