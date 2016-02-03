@@ -882,8 +882,8 @@ MpgTrad.prototype._trads = {
 	302: {en: "You don't have permission to change chan data $1",
 		  fr: "Vous n'avez pas la permission de changer les données du salon $1"},
 
-	303: {en: "You can only use alphanumeric, - and _ in an user name but you have write $1",
-		  fr: "Pour un nom d'utilisateur vous ne pouvez utiliser que des caractères latin standarts (minuscules, majuscules), des chiffres, des tirets et des underscores mais vous avez écris $1"},
+	303: {en: "You can only use alphanumeric, hyphen and underscore between 3 and 10 characters in an user name but you have write $1",
+		  fr: "Pour un nom d'utilisateur vous ne pouvez utiliser que des caractères latin standarts (minuscules, majuscules), des chiffres, des tirets et des underscores entre 3 et 10 caractères mais vous avez écris $1"},
 
 	304: {en: "Name undefined",
 		  fr: "Nom indéfinis"},
@@ -919,9 +919,9 @@ MpgTrad.prototype._trads = {
 	403: {en: "Name undefined",
 		  fr: "Nom indéfinis"},
 
-	404: {en: "You can only use alphanumeric, - and _ in an chan name but you have write $1",
-		  fr: "Pour un nom de salon vous ne pouvez utiliser que des caractères latin standarts (minuscules, majuscules), des chiffres, des tirets et des underscores mais vous avez écris $1"},
-
+	404: {en: "You can only use alphanumeric, hyphen and underscore between 3 and 10 characters in a chan name but you have write $1",
+		  fr: "Pour un nom de salon vous ne pouvez utiliser que des caractères latin standarts (minuscules, majuscules), des chiffres, des tirets et des underscores entre 3 et 10 caractères mais vous avez écris $1"},
+	
 	405: {en: "A chan event must have a label property ($1)",
 		  fr: "Un évênement de salon doit avoir une propriété \"label\" ($1)"},
 

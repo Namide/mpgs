@@ -19,7 +19,7 @@
 			<div class="chans open">
 				
 				<form action="">
-					<input id="chan" type="text" pattern="^[_A-Za-z0-9-]+$" required placeholder="Create new chan" autocomplete="off">
+					<input id="chan" type="text" pattern="^[_A-Za-z0-9-]{3,10}$" maxlength="10" required placeholder="Create new chan" autocomplete="off">
 					<!-- <input type="submit" value="Send"> -->
 				</form>
 				<h2>Channels</h2>
@@ -50,7 +50,7 @@
 			<div class="users open">
 				
 				<form action="">
-					<input id="name" type="text" pattern="^[_A-Za-z0-9-]+$" required placeholder="Your name" autocomplete="off">
+					<input id="name" type="text" pattern="^[_A-Za-z0-9-]{3,10}$" maxlength="10" required placeholder="Your name" autocomplete="off">
 					<!-- <input type="submit" value="Ok"> -->
 				</form>
 				
@@ -80,18 +80,45 @@
 			$(".content>.chans>h2").html(tl("Channels", "Salons"));
 			$("#chan").attr("placeholder", tl("Create new Channel", "Crée un nouveau salon"));
 			$("#name").attr("placeholder", tl("Change your name", "Change ton nom"));
+			$("#chan").attr("title", tl("You can only use alphanumeric, hyphen and underscore between 3 and 10 characters.", "vous ne pouvez utiliser que des caractères latin standarts (minuscules, majuscules), des chiffres, des tirets et des underscores entre 3 et 10 caractères."));
+			$("#name").attr("title", tl("You can only use alphanumeric, hyphen and underscore between 3 and 10 characters.", "vous ne pouvez utiliser que des caractères latin standarts (minuscules, majuscules), des chiffres, des tirets et des underscores entre 3 et 10 caractères."));
 			$(".users>h2:first").html(tl("Users in channel", "Utilisateurs dans le salon"));
 			
 			function strToColor(str) {
 				
-				var n = 0;
+				var r = 0, g = 0, b = 0, f;
 				for(var i = 0; i < str.length; i++) {
 					
-					n += str.charCodeAt(i) << i;
+					var mod = i % 3;
+					if (mod < 1) {
+						r += str.charCodeAt(i);
+					} else if (mod < 2) {
+						g += str.charCodeAt(i);
+					} else {
+						b += str.charCodeAt(i);
+					}
 				}
-				n = Math.floor(n * Math.PI * 0xF000);
-				var c = (n & 0xFFFFFF).toString(16);
 				
+				f = function(c) { c = c * Math.PI; return c - Math.floor(c); };
+				r = f(r);
+				g = f(g);
+				b = f(b);
+				
+				// Add saturation
+				f = function(str) { return str + String.fromCharCode(str.charCodeAt(Math.round(str.length * 0.5)) + 1); };
+				var dMax = Math.max(Math.max(Math.abs(r-g), Math.abs(r-b)), Math.abs(g-b));
+				if (dMax < 0.1) {
+					return strToColor(f(str));
+				}
+				
+				// Avoid black or white
+				var add = r + g + b;
+				if (add > 1.7 || add < 1.3) {
+					return strToColor(f(str));
+				}
+				
+				f = function(c) { return Math.round(c * 0xFF) & 0xFF; };
+				var c = (f(r) << 16 | f(g) << 8 | f(b)).toString(16);
 				while(c.length < 6)
 					c = "0" + c;
 				
