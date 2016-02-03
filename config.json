@@ -1,10 +1,10 @@
 {
 
-	"host": "localhost",
+	"host": "192.75.3.1",
 	"path": "/chat",
-	"port": 8080,
+	"port": 5302,
 	
-	"debug": true,
+	"debug": false,
 
 	"chan": {
 		"start": {

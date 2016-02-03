@@ -59,7 +59,7 @@
 		
 	
 		<script type="text/javascript" src="jquery-2.2.0.min.js"></script>
-		<script type="text/javascript" src="mpgClient.js"></script>
+		<script type="text/javascript" src="MpgClient.js"></script>
 		<script language="javascript" type="text/javascript">
 			
 			var LANG = MpgTrad.GetLang(["en", "fr"])
@@ -76,34 +76,19 @@
 			// Convert a string to a hexadecimal color (RGB)
 			function strToColor(str) {
 				
-				var r = 0, g = 0, b = 0, f;
-				for(var i = 0; i < str.length; i++) {
-					
-					var mod = i % 3;
-					if (mod < 1) {
-						r += str.charCodeAt(i);
-					} else if (mod < 2) {
-						g += str.charCodeAt(i);
-					} else {
-						b += str.charCodeAt(i);
-					}
-				}
+				var r = 0, g = 0, b = 0, f, l = str.length, n = 0;
+				for(var i = 0; i < str.length; i++)
+					n += str.charCodeAt(i) * Math.E * i;
+				n = Math.floor(0xFFFFFF * (Math.sin(n) * 0.5 + 0.5));
 				
-				f = function(c) { c = c * Math.PI; return c - Math.floor(c); };
-				r = f(r);
-				g = f(g);
-				b = f(b);
+				r = ((n >> 16) & 0xFF) / 0xFF;
+				g = ((n >> 8) & 0xFF) / 0xFF;
+				b = (n & 0xFF) / 0xFF;
 				
 				// Add saturation
 				f = function(str) { return str + String.fromCharCode(str.charCodeAt(Math.round(str.length * 0.5)) + 1); };
 				var dMax = Math.max(Math.max(Math.abs(r-g), Math.abs(r-b)), Math.abs(g-b));
-				if (dMax < 0.1) {
-					return strToColor(f(str));
-				}
-				
-				// Avoid black or white
-				var add = r + g + b;
-				if (add > 1.7 || add < 1.3) {
+				if (dMax < 0.8) {
 					return strToColor(f(str));
 				}
 				
@@ -111,7 +96,6 @@
 				var c = (f(r) << 16 | f(g) << 8 | f(b)).toString(16);
 				while(c.length < 6)
 					c = "0" + c;
-				
 				return c;
 			}
 			
@@ -161,7 +145,8 @@
 				}
 				
 				// INIT SOCKET CLIENT
-				var mpgc = new MpgClient("ws://localhost:8080/chat", function() {
+				var mpgc = new MpgClient("ws://192.75.3.1:5302/chat", function() {
+				//var mpgc = new MpgClient("ws://localhost:8080/chat", function() {
 					
 					// DISPLAY CHAN LIST
 					this.getChans(displayChans);
