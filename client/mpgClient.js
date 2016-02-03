@@ -173,7 +173,7 @@ MpgChan.prototype._getUserIndexByName = function (name) {
 		╚═══════════════════════════╝
 */
 
-function MpgClient(URI, onConnected, lang) {
+function MpgClient(URI, onConnected, onError, lang) {
 
 	this.me;
 	this.chan;
@@ -185,16 +185,16 @@ function MpgClient(URI, onConnected, lang) {
 	this.websocket;
 	
 	
-	this.onLog = function(msg) {
-		//console.log(msg);
-	};
-	
 	
 	/*
 	
 			LISTENER
 			
 	*/
+	
+	this.onLog = function(msg) {
+		//console.log(msg);
+	};
 	
 	this.onClose = function(msg) {
 		//this.onLog("socket closed");
@@ -254,7 +254,7 @@ function MpgClient(URI, onConnected, lang) {
 		this.onLog(list);
 	};
 	
-	this.init(onConnected);
+	this.init(onConnected, onError);
 }
 
 
@@ -264,21 +264,30 @@ function MpgClient(URI, onConnected, lang) {
 		    └───────────────────┘
 */
 
-MpgClient.prototype.init = function(onConnected) {
-	
-	var mpgClient = this;
-	
-	this.websocket = new WebSocket(this.uri);
+MpgClient.prototype.init = function(onConnected, onError) {
 	
 	if (onConnected !== undefined)
 		this.onConnected = onConnected;
 		
-	//this.websocket.onopen = function(evt) { onConnected(mpgClient); };
-	this.websocket.onclose = function(evt) { mpgClient.onClose(evt.data) };
-	this.websocket.onmessage = function(evt) { mpgClient._parse(evt); };
-	this.websocket.onerror = function(evt) { mpgClient.onError(this.trad.get(5, [evt.data])); };
+	if (onError !== undefined)
+		this.onError = onError;
 	
-	window.addEventListener("beforeunload", function(e){ mpgClient.close(); }, false);
+	try {
+		
+		var mpgClient = this;
+		this.websocket = new WebSocket(this.uri);
+		//this.websocket.onopen = function(evt) { onConnected(mpgClient); };
+		this.websocket.onclose = function(evt) { mpgClient.onClose(evt.data) };
+		this.websocket.onmessage = function(evt) { mpgClient._parse(evt); };
+		this.websocket.onerror = function(evt) { mpgClient.onError(mpgClient.trad.get(5)); };
+
+		window.addEventListener("beforeunload", function(e){ mpgClient.close(); }, false);
+	
+	} catch (e) {
+		
+		if (this.onError !== undefined)
+			this.onError(this.trad.get(0));
+	}
 };
 
 
@@ -862,8 +871,8 @@ MpgTrad.prototype._trads = {
 	4: {en: "You are disconnected!",
 		fr: "Vous êtes déconnecté !"},
 
-	5: {en: "Socket error: $1",
-		fr: "Erreur de socket : $1"},
+	5: {en: "Connection server error",
+		fr: "Erreur de connexion avec le serveur"},
 
 	// Commands
 	101: {en: "Command label undefined ($1)",

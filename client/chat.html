@@ -9,10 +9,6 @@
 	<body>
 		
 		
-		<!-- <header>
-			T'Chat
-		</header> -->
-		
 		<div class="content">
 			
 			<!-- CHAN LIST -->
@@ -20,7 +16,6 @@
 				
 				<form action="">
 					<input id="chan" type="text" pattern="^[_A-Za-z0-9-]{3,10}$" maxlength="10" required placeholder="Create new chan" autocomplete="off">
-					<!-- <input type="submit" value="Send"> -->
 				</form>
 				<h2>Channels</h2>
 				<ul class="list"></ul>
@@ -30,7 +25,7 @@
 			<!-- MESSAGES -->
 			<div class="chat">
 				
-				<h1></h1>
+				<h1>&nbsp</h1>
 				
 				<div class="arrows">
 					<a class="open left-arrow"></a>
@@ -41,7 +36,6 @@
 				<div class="in">
 					<form action="">
 						<input id="msg" type="text" required autofocus placeholder="Message" autocomplete="off">
-						<!-- <input type="submit" value="Send"> -->
 					</form>
 				</div>
 			</div>
@@ -51,7 +45,6 @@
 				
 				<form action="">
 					<input id="name" type="text" pattern="^[_A-Za-z0-9-]{3,10}$" maxlength="10" required placeholder="Your name" autocomplete="off">
-					<!-- <input type="submit" value="Ok"> -->
 				</form>
 				
 				<h2>Users in channel</h2>
@@ -84,6 +77,7 @@
 			$("#name").attr("title", tl("You can only use alphanumeric, hyphen and underscore between 3 and 10 characters.", "vous ne pouvez utiliser que des caractères latin standarts (minuscules, majuscules), des chiffres, des tirets et des underscores entre 3 et 10 caractères."));
 			$(".users>h2:first").html(tl("Users in channel", "Utilisateurs dans le salon"));
 			
+			// Convert a string to a hexadecimal color (RGB)
 			function strToColor(str) {
 				
 				var r = 0, g = 0, b = 0, f;
@@ -125,11 +119,12 @@
 				return c;
 			}
 			
+			// DOM dependant functions
 			$(function(){
 			
 				var output = $(".chat .out");
 				
-				// DISPLAY CHANS
+				// add click funtion to join chan by a tag
 				function addClickToChan (tag, chanName) {
 
 					tag.click( function() {
@@ -138,6 +133,7 @@
 					});
 				}
 
+				// DISPLAY CHANS
 				function displayChans(list) {
 						
 					list.sort();
@@ -157,6 +153,7 @@
 					}
 				}
 				
+				// DISPLAY MESSAGE
 				function addMsg(msg) {
 					
 					var p = $("<p>");
@@ -179,7 +176,7 @@
 						
 						$(".chat h1").html(mpgc.chan.data.name);
 						output.html("");
-					}
+					};
 					
 					// DISPLAY CHAN TEXT
 					this.onLog = function (msg) {
@@ -218,20 +215,18 @@
 						console.log(name + " " + this.me.data.name);
 						console.log(name === this.me.data.name);
 						addMsg("<strong class='msg-name' style='color: #" + strToColor(name) + ";'>" + name + "</strong>: <span class='msg-body" + ((name === this.me.data.name) ? "  msg-me" : "") + "'>" + msg + "</span>");
-					}
+					};
 					
 					// WRITE SERVER MESSAGE ON CHAN
 					this.onServerMsg = function (msg) {
 
 						addMsg("<em class='msg-server'>" + msg + "</em>");
-					}
+					};
 					
-					// WRITE ERROR MESSAGE ON CHAN
-					this.onError = function (msg) {
+				}, function (msg) {
 
-						addMsg("<em class='msg-error'>" + msg + "</em>");
-					}
-					
+					// WRITE ERROR MESSAGE ON CHAN
+					addMsg("<em class='msg-error'>" + msg + "</em>");
 				});
 				
 				// CHANGE NAME
@@ -247,6 +242,7 @@
 				});
 				
 				
+				// CREATE AND JOIN NEW CHAN
 				$(".chans").submit(function (e){
 
 					e.preventDefault();
