@@ -1,1 +1,1 @@
-node mpgServer.js
+node index.js

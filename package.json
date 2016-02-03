@@ -1,8 +1,8 @@
 {
 	"name": "mpgs",
 	"version": "0.1.0",
-	"description": "A NodeJs server for WebSocket chats or minigames",
-	"main": "mpgServer.js",
+	"description": "A NodeJs server for WebSocket chats or mini-games",
+	"main": "index.js",
 	"keywords": [
 		"server",
 		"websocket",

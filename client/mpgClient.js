@@ -71,8 +71,8 @@ MpgChan.prototype.leave = function (user) {
 	
 	var i = this.users.indexOf(user);
 	if (i > -1) {
+		
 		this.users.splice(i, 1);
-		//this._dispatchChanUserList();
 		return true;
 	}
 	
@@ -226,7 +226,7 @@ function MpgClient(URI, onConnected, onError, lang) {
 		this.onLog(list);
 	};
 	
-	this.onEvtUser = function(user, label, data) {
+	this.onUserEvt = function(user, label, data) {
 		this.onLog(label);
 	};
 	
@@ -595,7 +595,7 @@ MpgClient.prototype._parse = function(evt)
 	if (msg.userEvt !== undefined) {
 		
 		var d = msg.userEvt;
-		this.onEvtUser(d.name, d.label, d.data);
+		this.onUserEvt(d.name, d.label, d.data);
 	}
 	
 	if (msg.chanEvt !== undefined) {
