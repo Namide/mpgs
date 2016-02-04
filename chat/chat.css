@@ -58,6 +58,20 @@ li {
 	display: block;
 }
 
+.kick {
+	
+	float: right;
+	color: #dc322f;
+	padding-left: 4px;
+}
+
+.up {
+	
+	float: right;
+	color: #07ca95;
+	padding-left: 4px;
+}
+
 input {
 	
 	width: 100%;

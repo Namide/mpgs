@@ -25,7 +25,15 @@ function MpgUser () {
 	this.onLeave;
 }
 
+MpgUser.prototype.isModerator = function () {
+	
+	return this.data.role === "moderator";
+}
 
+MpgUser.prototype.isAdmin = function () {
+	
+	return this.data.role === "admin";
+}
 
 /*
 		╔═══════════════════════════╗
@@ -242,6 +250,10 @@ function MpgClient(URI, onConnected, onError, lang) {
 		
 	};
 	
+	/*this.onUserDataChange = function(user, data) {
+		
+	};*/
+	
 	this.onConnected = function(user) {
 		//this.onLog(data);
 	};
@@ -304,10 +316,10 @@ MpgClient.prototype.close = function() {
 	this.websocket.close();
 };
 
-MpgClient.prototype.getChanUserByName = function(name) {
+MpgClient.prototype.getUserByName = function(name) {
 	
 	var u = this.chan.getUserByName(name);
-	if (u !== undefined)
+	if (u !== null)
 		return u;
 	
 	if (this.me.data.name === name)
@@ -316,10 +328,10 @@ MpgClient.prototype.getChanUserByName = function(name) {
 	return null;
 };
 
-MpgClient.prototype.getChanUserById = function(id) {
+MpgClient.prototype.getUserById = function(id) {
 	
 	var u = this.chan.getUserById(id);
-	if (u != undefined)
+	if (u !== null)
 		return u;
 	
 	if (this.me != undefined && this.me.data.id === id)
@@ -465,10 +477,15 @@ MpgClient.prototype.askListChanData = function() {
 	this._ask("get-chan-data");
 };*/
 
-MpgClient.prototype.askKick = function(userName) {
-	this._ask("kick-user", userName);
+MpgClient.prototype.kickUser = function(user) {
+	
+	this.sendUserData({chan:{id:-1}}, user);
 };
 
+MpgClient.prototype.upToModerator = function(user) {
+	
+	this.sendUserData({role:"moderator"}, user);
+};
 
 
 /*
@@ -482,7 +499,7 @@ MpgClient.prototype._updateUser = function(data, dispatch) {
 	if (dispatch === undefined)
 		dispatch = true;
 	
-	if (this.me == undefined) {
+	if (this.me === undefined) {
 
 		this.me = new MpgUser();
 		this._setUserData(data, this.me, false);
@@ -495,7 +512,7 @@ MpgClient.prototype._updateUser = function(data, dispatch) {
 		return this.me;
 	}
 	
-	var u = this.getChanUserById(data.id);
+	var u = this.getUserById(data.id);
 	if (u !== null) {
 
 		this._setUserData(data, u);
@@ -510,6 +527,15 @@ MpgClient.prototype._updateUser = function(data, dispatch) {
 	}
 
 	return u;
+};
+
+MpgClient.prototype._dispatchUserDataChange = function(user, data) {
+	
+	if (user.onDataChange !== undefined)
+		user.onDataChange(data);
+	
+	if (this.onUserDataChange !== undefined)
+		this.onUserDataChange(user, data);
 };
 
 MpgClient.prototype._dispatchChanUserList = function() {
@@ -577,7 +603,7 @@ MpgClient.prototype._parse = function(evt)
 	if (msg.chanMsg !== undefined) {
 		
 		var d = msg.chanMsg;
-		var u = this.getChanUserById(d.from);
+		var u = this.getUserById(d.from);
 		if (u !== null)
 			this.onChanMsg(u.data.name, d.text);
 		else
@@ -770,10 +796,11 @@ MpgClient.prototype._setUserData = function(data, user, dispatch) {
 		}
 	}
 	
-	if (dispatch && user.onDataChange !== undefined)
-		user.onDataChange();
-	/*if (this.onDataUser !== undefined)
-		this.onDataUser(user, data);*/
+	this._dispatchUserDataChange(user, data);
+	/*if (dispatch && user.onDataChange !== undefined)
+		user.onDataChange(data);
+	if (this.onDataUser !== undefined)
+		this.onUserDataChange(user, data);*/
 };
 
 MpgClient.prototype._setChanData = function(data) {
@@ -917,6 +944,9 @@ MpgTrad.prototype._trads = {
 
 	311: {en: "You don't have permission to kick $1 from $2",
 		  fr: "Vous n'avez pas la permission d'expulser $1 du salon $2"},
+
+	312: {en: "$1 is already $2",
+		  fr: "$1 est déjà $2"},
 
 	// Chan
 	401: {en: "You don't have permission to change the pass of the chan",

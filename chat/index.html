@@ -112,6 +112,24 @@
 						return false;
 					});
 				}
+				
+				// add click funtion to kick a user
+				function addClickKickUser (tag, user) {
+
+					tag.click( function() {
+						mpgc.kickUser(user);
+						return false;
+					});
+				}
+
+				// add click funtion to up to moderator a user
+				function addClickUpUser (tag, user) {
+
+					tag.click( function() {
+						mpgc.upToModerator(user);
+						return false;
+					});
+				}
 
 				// DISPLAY CHANS
 				function displayChans(list) {
@@ -127,10 +145,68 @@
 						li.html(list[i]);
 						if (this.chan.data.name == list[i])
 							li.addClass("selected");
-						//var li = $("<li>");
-						//li.append(a);
+						
 						ul.append(li);
 					}
+				}
+				
+				// DISPLAY USERS
+				function displayUsers(users, mpgc) {
+					
+					console.log("->");
+					console.log(users);
+					console.log(users.length);
+					
+					users.sort(function(a, b) {
+
+						var a = (a.isAdmin() || a.isModerator()) ? ("@" + a.data.name) : a.data.name;
+						var b = (b.isAdmin() || b.isModerator()) ? ("@" + b.data.name) : b.data.name;
+						return a > b;
+					});
+
+					var list = $(".users .list");
+					list.html("");
+
+					for(var i = 0; i<users.length; i++) {
+
+						var name = users[i].data.name;
+						var li = $("<li>")
+						if (mpgc.me == users[i])
+							li.addClass("selected");
+
+						li.css("color", "#" + strToColor(name));
+
+						if (users[i].isAdmin() || users[i].isModerator()) {
+
+							li.html("@" + name);
+
+						} else {
+
+							li.html(name);
+						}
+
+						if (users[i] !== mpgc.me && (mpgc.me.isAdmin() || mpgc.me.isModerator())) {
+
+							if (!users[i].isAdmin() && !users[i].isModerator()) {
+								
+								var up = $("<a>");
+								up.html(tl("up", "S"));
+								up.addClass("up");
+								addClickUpUser(up, users[i]);
+								li.append(up);
+							}
+							
+							var kick = $("<a>");
+							kick.html(tl("kick", "X"));
+							kick.addClass("kick");
+							addClickKickUser(kick, users[i]);
+							li.prepend(kick);
+						}
+
+						list.append(li);
+					}
+
+					$(".users .num").html(users.length + tl(" people", " personne" + ((users.length>1)?"s":"")));
 				}
 				
 				// DISPLAY MESSAGE
@@ -147,6 +223,7 @@
 				// INIT SOCKET CLIENT
 				var mpgc = new MpgClient("ws://192.75.3.1:5302/chat", function() {
 				//var mpgc = new MpgClient("ws://localhost:8080/chat", function() {
+					
 					
 					// DISPLAY CHAN LIST
 					this.getChans(displayChans);
@@ -165,35 +242,11 @@
 					};
 
 					// DISPLAY CHAN USER LIST
-					this.onChanUserList = function (users) {
-
-						users.sort(function(a, b) {
-							return a.data.name > b.data.name;
-						});
-						
-						var list = $(".users .list");
-						list.html("");
-						
-						for(var i = 0; i<users.length; i++) {
-							
-							var name = users[i].data.name;
-							var li = $("<li>")
-							if (this.me.data.name == name)
-								li.addClass("selected");
-							
-							li.css("color", "#" + strToColor(name));
-							li.html(name);
-							list.append(li);
-						}
-						
-						$(".users .num").html(users.length + tl(" people", " personne" + ((users.length>1)?"s":"")));
-					};
+					this.onChanUserList = function(list) { displayUsers(list, this) };
 
 					// WRITE MESSAGE ON CHAN
 					this.onChanMsg = function (name, msg) {
 
-						console.log(name + " " + this.me.data.name);
-						console.log(name === this.me.data.name);
 						addMsg("<strong class='msg-name' style='color: #" + strToColor(name) + ";'>" + name + "</strong>: <span class='msg-body" + ((name === this.me.data.name) ? "  msg-me" : "") + "'>" + msg + "</span>");
 					};
 					
@@ -201,6 +254,12 @@
 					this.onServerMsg = function (msg) {
 
 						addMsg("<em class='msg-server'>" + msg + "</em>");
+					};
+					
+					// RELOAD USER LIST
+					this.onUserDataChange = function () {
+						
+						displayUsers(this.getChanUserList(), this);
 					};
 					
 				}, function (msg) {
