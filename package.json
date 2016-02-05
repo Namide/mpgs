@@ -17,5 +17,8 @@
 	"license": "MIT",
 	"dependencies": {
 		"ws": "^1.0.1"
+	},
+	"scripts": {
+		"start": "node index.js"
 	}
 }
