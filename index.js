@@ -7,10 +7,11 @@
  */
 
 
+
+
+console.log("			-------Check IP--------");
 var os = require('os');
 var ifaces = os.networkInterfaces();
-
-console.log("---------------");
 Object.keys(ifaces).forEach(function (ifname) {
   var alias = 0;
 
@@ -21,16 +22,19 @@ Object.keys(ifaces).forEach(function (ifname) {
     }
 
     if (alias >= 1) {
-      // this single interface has multiple ipv4 addresses
-      console.log(ifname + ':' + alias, iface.address);
+		// this single interface has multiple ipv4 addresses
+		console.log(" ");
+		console.log("		" + ifname + ':' + alias, iface.address);
     } else {
-      // this interface has only one ipv4 adress
-      console.log(ifname, iface.address);
+		// this interface has only one ipv4 adress
+		console.log(" ");
+		console.log("		" + ifname, iface.address);
     }
     ++alias;
   });
 });
-console.log("---------------");
+console.log(" ");
+console.log("			-----Start server-----");
 
 
 
@@ -44,8 +48,14 @@ var config = require('./config');
 
 // Init the server
 var server = new Server();
-var wss = new WebSocketServer({ port: config.port, host: config.host, path: config.path });
-console.log("WebSocketServer init on " + config.host + config.path + ":" + config.port );
+var wss = new WebSocketServer({ port: process.env.port || config.port, host: (process.env.HOST || config.host), path: config.path });
+
+console.log(" ");
+console.log("		Server init: " + (process.env.HOST || config.host) + config.path + ":" + (process.env.port || config.port) );
+console.log(" ");
+
+console.log("			----------------------");
+
 
 // Listen the new connections
 wss.on('connection', function connection(ws) {
