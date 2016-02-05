@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Chat</title>
+		<title>Tchat</title>
 		<meta charset="utf-8">
 		<link rel="stylesheet" type="text/css" href="chat.css">
 	
@@ -99,11 +99,25 @@
 				return c;
 			}
 			
+		  	
 			// DOM dependant functions
 			$(function(){
 			
 				var output = $(".chat .out");
 				
+			  	// Add wink for new messages
+			 	window.mpgcFocus = true;
+				$(window).focus(function () {
+				  
+					window.mpgcFocus = true;
+					document.title = "Tchat";
+				  
+				}).blur(function () {
+				  
+					window.mpgcFocus = false;
+				 	
+				});
+			  	
 				// add click funtion to join chan by a tag
 				function addClickToChan (tag, chanName) {
 
@@ -152,10 +166,6 @@
 				
 				// DISPLAY USERS
 				function displayUsers(users, mpgc) {
-					
-					console.log("->");
-					console.log(users);
-					console.log(users.length);
 					
 					users.sort(function(a, b) {
 
@@ -217,11 +227,10 @@
 					p.html(msg);
 					output.append(p);
 					output.scrollTop(output.height());
-					console.log();
 				}
 				
 				// INIT SOCKET CLIENT
-				var mpgc = new MpgClient("ws://192.75.3.1:5302/chat", function() {
+				var mpgc = new MpgClient("ws://mpg.herokuapp.com:5302/chat", function() {
 				//var mpgc = new MpgClient("ws://localhost:8080/chat", function() {
 					
 					
@@ -248,6 +257,9 @@
 					this.onChanMsg = function (name, msg) {
 
 						addMsg("<strong class='msg-name' style='color: #" + strToColor(name) + ";'>" + name + "</strong>: <span class='msg-body" + ((name === this.me.data.name) ? "  msg-me" : "") + "'>" + msg + "</span>");
+						
+						if (!window.mpgcFocus)
+				  			document.title = "Tchat ☻ (" + tl("new message", "nouveau message") + ")";
 					};
 					
 					// WRITE SERVER MESSAGE ON CHAN
