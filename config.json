@@ -1,8 +1,8 @@
 {
 
-	"host": "localhost",
+	"host": "0.0.0.0",
 	"path": "/chat",
-	"port": 3000,
+	"port": 5000,
 	
 	"debug": false,
 

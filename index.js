@@ -14,10 +14,7 @@ var WebSocketServer = require('ws').Server;
 var config = require('./config');
 
 
-
-
-
-
+/*
 console.log("- Check IP");
 var os = require('os');
 var ifaces = os.networkInterfaces();
@@ -41,22 +38,15 @@ Object.keys(ifaces).forEach(function (ifname) {
 		++alias;
 	});
 });
-
-
-
-
-
-
-
-
 console.log("- Start server");
+*/
+
 
 // Init the server
 var server = new Server();
 var wss = new WebSocketServer({port: config.port, host: config.host, path: config.path});
 
-
-console.log("	Server init: " + config.host + config.path + ":" + config.port);
+console.log("Server init: " + config.host + config.path + ":" + config.port);
 
 
 
