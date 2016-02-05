@@ -1,26 +1,33 @@
 {
 	"name": "mpgs",
-	"version": "0.1.0",
 	"description": "A NodeJs server for WebSocket chats or mini-games",
+	"version": "0.1.0",
+	"license": "MIT",
+	"author": {
+		"name": "Damien Doussaud",
+		"url": "http://namide.com/"
+	},
 	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Namide/mpgs.git"
+	},
+	"dependencies": {
+		"ws": "^1.0.1",
+		"options": ">=0.0.5",
+		"ultron": "1.0.x"
+	},
+	"engines": {
+		"node": "0.10.x"
+	},
+	"scripts": {
+		"start": "node index.js"
+	},
 	"keywords": [
 		"server",
 		"websocket",
 		"ws",
 		"chat",
 		"game"
-	  ],
-	"author": {
-		"name": "Damien Doussaud",
-		"url": "http://namide.com/"
-	},
-	"license": "MIT",
-	"dependencies": {
-		"ws": "^1.0.1",
-		"options": ">=0.0.5",
-		"ultron": "1.0.x"
-	},
-	"scripts": {
-		"start": "node index.js"
-	}
+	]
 }
