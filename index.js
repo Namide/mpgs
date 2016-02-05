@@ -6,6 +6,15 @@
  * MIT Licensed
  */
 
+// Init the lib WS
+var Server = require('./lib/Server');
+var WebSocketServer = require('ws').Server;
+
+// Load the config datas
+var config = require('./config');
+
+
+
 
 
 
@@ -39,14 +48,12 @@ Object.keys(ifaces).forEach(function (ifname) {
 
 
 
+
+
+
+
+
 console.log("- Start server");
-
-// Init the lib WS
-var Server = require('./lib/Server');
-var WebSocketServer = require('ws').Server;
-
-// Load the config datas
-var config = require('./config');
 
 // Init the server
 var server = new Server();
