@@ -2,7 +2,7 @@
 
 	"host": "mpg.herokuapp.com",
 	"path": "/chat",
-	"port": 5302,
+	"port": 80,
 	
 	"debug": false,
 
