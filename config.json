@@ -1,6 +1,6 @@
 {
 
-	"host": "192.75.3.1",
+	"host": "mpg.herokuapp.com",
 	"path": "/chat",
 	"port": 5302,
 	
