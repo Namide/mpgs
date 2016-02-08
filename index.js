@@ -40,15 +40,14 @@ Object.keys(ifaces).forEach(function (ifname) {
 });
 console.log("- Start server");
 */
-console.log("port:" + process.env.PORT);
-console.log("host:" + process.env.HOST);
-console.log(process.env);
+
+//console.log(process.env);
 
 // Init the server
 var server = new Server();
-var wss = new WebSocketServer({port: (process.env.port || config.port), host: (process.env.host || config.host), path: config.path});
+var wss = new WebSocketServer({port: (process.env.PORT || config.port), host: config.host, path: config.path});
 
-console.log("Server init: " + (process.env.host || config.host) + config.path + ":" + (process.env.port || config.port));
+console.log("Server init: " + config.host + config.path + ":" + (process.env.PORT || config.port));
 
 
 
