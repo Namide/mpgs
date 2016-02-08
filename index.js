@@ -40,9 +40,9 @@ Object.keys(ifaces).forEach(function (ifname) {
 });
 console.log("- Start server");
 */
-
-console.log("port:" + process.env.port);
-console.log("host:" + process.env.host);
+console.log("port:" + process.env.PORT);
+console.log("host:" + process.env.HOST);
+console.log(process.env);
 
 // Init the server
 var server = new Server();
