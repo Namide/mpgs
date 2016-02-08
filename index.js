@@ -14,8 +14,8 @@ var WebSocketServer = require('ws').Server;
 var config = require('./config');
 
 
-
-console.log("- Check IP");
+// Test the environments host and port
+console.log("- Check Server");
 var os = require('os');
 var ifaces = os.networkInterfaces();
 var HOST = undefined;
@@ -43,16 +43,19 @@ Object.keys(ifaces).forEach(function (ifname) {
 		++alias;
 	});
 });
-console.log("- Start server");
-
-
+console.log("	port open", process.env.PORT);
 //console.log(process.env);
 
-// Init the server
-var server = new Server();
-var wss = new WebSocketServer({port: (process.env.PORT || config.port), host: (HOST || config.host), path: config.path});
 
-console.log("Server init: " + (HOST || config.host) + config.path + ":" + (process.env.PORT || config.port));
+
+
+
+
+// Init the server
+console.log("- Start server");
+var server = new Server();
+var wss = new WebSocketServer({port: (process.env.PORT || config.port), host: config.host, path: config.path});
+console.log("	Server init: " + config.host + config.path + ":" + config.port);
 
 
 
