@@ -14,10 +14,11 @@ var WebSocketServer = require('ws').Server;
 var config = require('./config');
 
 
-/*
+
 console.log("- Check IP");
 var os = require('os');
 var ifaces = os.networkInterfaces();
+var HOST = undefined;
 Object.keys(ifaces).forEach(function (ifname) {
 
 	var alias = 0;
@@ -30,24 +31,28 @@ Object.keys(ifaces).forEach(function (ifname) {
 
 		if (alias >= 1) {
 			// this single interface has multiple ipv4 addresses
+			HOST = iface.address;
 			console.log("	" + ifname + ':' + alias, iface.address);
+			
 		} else {
 			// this interface has only one ipv4 adress
+			HOST = iface.address;
 			console.log("	" + ifname, iface.address);
+			
 		}
 		++alias;
 	});
 });
 console.log("- Start server");
-*/
+
 
 //console.log(process.env);
 
 // Init the server
 var server = new Server();
-var wss = new WebSocketServer({port: (process.env.PORT || config.port), host: config.host, path: config.path});
+var wss = new WebSocketServer({port: (process.env.PORT || config.port), host: (HOST || config.host), path: config.path});
 
-console.log("Server init: " + config.host + config.path + ":" + (process.env.PORT || config.port));
+console.log("Server init: " + (HOST || config.host) + config.path + ":" + (process.env.PORT || config.port));
 
 
 
