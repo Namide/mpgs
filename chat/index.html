@@ -230,10 +230,7 @@
 				}
 				
 				// INIT SOCKET CLIENT
-				var mpgc = new MpgClient("ws://192.75.3.1:5000/chat", function() {
-				//var mpgc = new MpgClient("ws://192.75.3.1:5302/chat", function() {
-				//var mpgc = new MpgClient("ws://localhost:8080/chat", function() {
-					
+				var mpgc = new MpgClient("ws://localhost:8000/chat", function() {
 					
 					// DISPLAY CHAN LIST
 					this.getChans(displayChans);
