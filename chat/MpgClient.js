@@ -579,49 +579,42 @@ MpgClient.prototype.joinChan = function (chanName, chanPass) {
 	this.sendUserData({chan:{name: chanName, pass: chanPass}});
 };
 
+/**
+ * Change your name.
+ *
+ * @param {string} newName		Your new name
+ * @param {function} callback		Called when the name is changed
+ */
 MpgClient.prototype.changeUserName = function(newName, callback) {
 	
 	this.me.onDataNameChange = callback;
 	this.sendUserData({name: newName});
 };
 
+/**
+ * Change the name of the chan.
+ *
+ * @param {string} newName		New name of the chan
+ */
 MpgClient.prototype.changeChanName = function(newName) {
 	this.sendChanData({name: chanName});
 };
-/*
-MpgClient.prototype.askChangeChanPass = function(newPass) {
-	this._ask("set-chan-pass", newPass);
-};
 
-MpgClient.prototype.askUserData = function(userName) {
-	this._ask("get-user-data", userName);
-};*/
-/*
-MpgClient.prototype.askListUser = function() {
-	this._ask("get-list-user");
-};
-
-MpgClient.prototype.askListUserData = function() {
-	this._ask("get-list-user-data");
-};
-
-MpgClient.prototype.askListChan = function() {
-	this._ask("get-list-chan");
-};
-
-MpgClient.prototype.askListChanData = function() {
-	this._ask("get-list-chan-data");
-};*/
-
-/*MpgClient.prototype.askChanData = function() {
-	this._ask("get-chan-data");
-};*/
-
+/**
+ * Kick a user out of the chan (only if you are moderator)
+ *
+ * @param {User} user		User to kick
+ */
 MpgClient.prototype.kickUser = function(user) {
 	
 	this.sendUserData({chan:{id:-1}}, user);
 };
 
+/**
+ * Up a user to be moderator (only if you are moderator)
+ *
+ * @param {user} user		User to be moderator
+ */
 MpgClient.prototype.upToModerator = function(user) {
 	
 	this.sendUserData({role:"moderator"}, user);
@@ -634,6 +627,9 @@ MpgClient.prototype.upToModerator = function(user) {
 		    └────────────────────┘
 */
 
+/**
+ * @api private
+ */
 MpgClient.prototype._updateUser = function(data, dispatch) {
 	
 	if (dispatch === undefined)
@@ -669,6 +665,9 @@ MpgClient.prototype._updateUser = function(data, dispatch) {
 	return u;
 };
 
+/**
+ * @api private
+ */
 MpgClient.prototype._dispatchUserDataChange = function(user, data) {
 	
 	if (user.onDataChange !== undefined)
@@ -678,24 +677,36 @@ MpgClient.prototype._dispatchUserDataChange = function(user, data) {
 		this.onUserDataChange(user, data);
 };
 
+/**
+ * @api private
+ */
 MpgClient.prototype._dispatchChanUserList = function() {
 	
 	if (this.onChanUserList !== undefined)
 		this.onChanUserList(this.getChanUserList());
 };
 
+/**
+ * @api private
+ */
 MpgClient.prototype._dispatchServerChanList = function() {
 	
 	if (this.onListChan !== undefined)
 		this.onListChan(this.listChans);
 };
 
+/**
+ * @api private
+ */
 MpgClient.prototype._dispatchConnected = function() {
 	
 	if (this.onConnected !== undefined)
 		this.onConnected(this.me);
 };
 
+/**
+ * @api private
+ */
 MpgClient.prototype._dispatchChanChange = function() {
 	
 	if (this.onChanDataChange !== undefined)
@@ -708,7 +719,9 @@ MpgClient.prototype._dispatchChanChange = function() {
 	this._dispatchServerChanList();
 };
 
-
+/**
+ * @api private
+ */
 MpgClient.prototype._ask = function(label, data)
 {
 	var d = {serverCmd : {label: label}};
@@ -717,6 +730,9 @@ MpgClient.prototype._ask = function(label, data)
 	this.websocket.send( JSON.stringify(d) );
 }
 
+/**
+ * @api private
+ */
 MpgClient.prototype._parse = function(evt)
 {
 	var msg;
@@ -864,19 +880,9 @@ MpgClient.prototype._parse = function(evt)
 	}
 };
 
-/*MpgClient.prototype._createChan = function(data) {
-
-	if (data.id === undefined || data.name === undefined) {
-		
-		console.log("Not enouth data to create chan");
-		return;
-	}
-	
-	this.chan = new MpgChan(data.id);
-	this.chan.data.name = data.name;
-	this._setChanData(data);
-}*/
-
+/**
+ * @api private
+ */
 MpgClient.prototype._setUserData = function(data, user, dispatch) {
 	
 	if (dispatch === undefined)
@@ -937,12 +943,11 @@ MpgClient.prototype._setUserData = function(data, user, dispatch) {
 	}
 	
 	this._dispatchUserDataChange(user, data);
-	/*if (dispatch && user.onDataChange !== undefined)
-		user.onDataChange(data);
-	if (this.onDataUser !== undefined)
-		this.onUserDataChange(user, data);*/
 };
 
+/**
+ * @api private
+ */
 MpgClient.prototype._setChanData = function(data) {
 	
 	var newChan = false;
@@ -977,6 +982,11 @@ MpgClient.prototype._setChanData = function(data) {
 		╚═══════════════════════════════╝
 */
 
+/**
+ * Traduction data
+ *
+ * @constructor
+ */
 function MpgTrad (lang) {
 	
 	this.lang = lang || this.getLang();
@@ -985,6 +995,11 @@ function MpgTrad (lang) {
 		throw new Error("The language " + this.lang + " is not supported!");
 }
 
+/**
+ * Get lang of the navigator
+ *
+ * @return {string} Language (en, fr...)
+ */
 MpgTrad.prototype.getLang = function() {
 	
 	var l = (navigator.language || navigator.userLanguage).split('-')[0];
@@ -997,6 +1012,11 @@ MpgTrad.prototype.getLang = function() {
 	return "en";
 }
 
+/**
+ * Get lang of the navigator and check if it's in the traductions
+ * 
+ * @return {string} Language (en, fr...)
+ */
 MpgTrad.GetLang = function(langList) {
 	
 	var l = (navigator.language || navigator.userLanguage).split('-')[0];
@@ -1020,6 +1040,11 @@ MpgTrad.GetLang = function(langList) {
 		    └────────────────────┘
 */
 
+/**
+ * All the words
+ *
+ * @api private
+ */
 MpgTrad.prototype._trads = {
 		
 	// System
@@ -1125,6 +1150,13 @@ MpgTrad.prototype._trads = {
 
 };
 
+/**
+ * Get a traduction words
+ *
+ * @param {int} id			ID of the words
+ * @param {string|string[]} vars	Variable(s) to add in the words
+ * @return {string}
+ */
 MpgTrad.prototype.get = function(id, vars) {
 
 	if (vars === undefined)
