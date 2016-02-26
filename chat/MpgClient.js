@@ -81,7 +81,7 @@ function MpgChan (id) {
 /**
  * Push a user in the chan.
  *
- * @param {User} User to push in the chan
+ * @param {User} user		 User to push in the chan
  * @return {boolean} The user has join the chan
  */
 MpgChan.prototype.join = function (user) {
@@ -105,7 +105,7 @@ MpgChan.prototype.join = function (user) {
 /**
  * Move a User out of the chan.
  *
- * @param {User} User to move out of the chan
+ * @param {User} user		User to move out of the chan
  * @return {boolean} The user has move out of the chan
  */
 MpgChan.prototype.leave = function (user) {
@@ -123,7 +123,7 @@ MpgChan.prototype.leave = function (user) {
 /**
  * Replace the user list of the chan.
  *
- * @param {User[]} List of the new users
+ * @param {User[]} newUsers	List of the new users
  */
 MpgChan.prototype.replaceUsers = function (newUsers) {
 	
@@ -133,7 +133,7 @@ MpgChan.prototype.replaceUsers = function (newUsers) {
 /**
  * Get a User by his name.
  *
- * @param {string} Name of the user
+ * @param {string} name		 Name of the user
  * @return {User|null} User with this name or null
  */
 MpgChan.prototype.getUserByName = function (name) {
@@ -151,7 +151,7 @@ MpgChan.prototype.getUserByName = function (name) {
 /**
  * Get a user by his id.
  *
- * @param {int} Id of the user
+ * @param {int} id		 Id of the user
  * @return {User|null} User with this id or null
  */
 MpgChan.prototype.getUserById = function (id) {
@@ -169,7 +169,7 @@ MpgChan.prototype.getUserById = function (id) {
 /**
  * Remove the user by his name.
  *
- * @param {string} Name of the user
+ * @param {string} name		 Name of the user
  * @return {boolean} The user has been removed
  */
 MpgChan.prototype.removeUserByName = function (name) {
@@ -187,7 +187,7 @@ MpgChan.prototype.removeUserByName = function (name) {
 /**
  * Remove the user by his id.
  *
- * @param {string} Id of the user
+ * @param {string} id		 Id of the user
  * @return {booblean} The user has been removed
  */
 MpgChan.prototype.removeUserById = function (id) {
@@ -253,10 +253,10 @@ MpgChan.prototype._getUserIndexByName = function (name) {
  * Manager of the socket connection;
  * Container of users and chan class.
  *
- * @param {string} URI of the socket server (example: ws://host:port/directory)
- * @param {function} Called when socket is connected
- * @param {function} Called when an error has occured
- * @param {string} Lang of the client (en, fr...)
+ * @param {string} URI			URI of the socket server (example: ws://host:port/directory)
+ * @param {function} onConnected	Called when socket is connected
+ * @param {function} onError		Called when an error has occured
+ * @param {string} lang			Lang of the client (en, fr...)
  * @constructor
  */
 function MpgClient(URI, onConnected, onError, lang) {
@@ -328,10 +328,6 @@ function MpgClient(URI, onConnected, onError, lang) {
 		
 	};
 	
-	/*this.onUserDataChange = function(user, data) {
-		
-	};*/
-	
 	this.onConnected = function(user) {
 		//this.onLog(data);
 	};
@@ -354,6 +350,9 @@ function MpgClient(URI, onConnected, onError, lang) {
 		    └───────────────────┘
 */
 
+/**
+ * @api private
+ */
 MpgClient.prototype.init = function(onConnected, onError) {
 	
 	if (onConnected !== undefined)
@@ -389,11 +388,20 @@ MpgClient.prototype.init = function(onConnected, onError) {
 		    └───────────────────┘
 */
 
+/**
+ * Close the socket
+ */
 MpgClient.prototype.close = function() {
 	
 	this.websocket.close();
 };
 
+/**
+ * Get a user by his name.
+ *
+ * @param {string} name		 Name of the user
+ * @return {User|null} User with the name or null if we don't have
+ */
 MpgClient.prototype.getUserByName = function(name) {
 	
 	var u = this.chan.getUserByName(name);
@@ -406,6 +414,12 @@ MpgClient.prototype.getUserByName = function(name) {
 	return null;
 };
 
+/**
+ * Get a user by his id.
+ *
+ * @param {int} id		 ID of the user
+ * @return {User|null} User or null if not found
+ */
 MpgClient.prototype.getUserById = function(id) {
 	
 	var u = this.chan.getUserById(id);
@@ -418,6 +432,12 @@ MpgClient.prototype.getUserById = function(id) {
 	return null;
 };
 
+/**
+ * Get all the users connect
+ * (you and the others in the chan)
+ * 
+ * @return {User[]} List of the users
+ */
 MpgClient.prototype.getChanUserList = function() {
 	
 	if (this.me === undefined ||
@@ -437,6 +457,12 @@ MpgClient.prototype.getChanUserList = function() {
 		    └────────────────────────┘
 */
 
+/**
+ * Send a message to the chan or to a user
+ *
+ * @param {string} msg		Your message
+ * @param {User?} user		Facultative, if it's null: the message is send to all the chan
+ */
 MpgClient.prototype.sendMsg = function(msg, user) {
 	
 	var d;
@@ -452,6 +478,13 @@ MpgClient.prototype.sendMsg = function(msg, user) {
 	this.websocket.send( JSON.stringify(d) );
 };
 
+/**
+ * Send an event.
+ * 
+ * @param {string} label		Label of the event
+ * @param {Object} data			Datas of the event
+ * @param {User} user			Facultative, target of the event (if it's null, the target is you)
+ */
 MpgClient.prototype.sendUserEvt = function(label, data, user) {
 	
 	var d;
@@ -467,6 +500,12 @@ MpgClient.prototype.sendUserEvt = function(label, data, user) {
 	this.websocket.send( JSON.stringify(d) );
 };
 
+/**
+ * Change data(s) of a user
+ *
+ * @param {Object} data		Data with new information
+ * @param {User?} user		Facultative, target: if null the target is you
+ */
 MpgClient.prototype.sendUserData = function(data, user) {
 	
 	var d = data;
@@ -478,12 +517,23 @@ MpgClient.prototype.sendUserData = function(data, user) {
 	this.websocket.send( JSON.stringify({userData : d}) );
 };
 
+/**
+ * Send an event to the chan.
+ *
+ * @param {string} label	Label of the event
+ * @param {Object} data		Datas of the event
+ */
 MpgClient.prototype.sendChanEvt = function(label, data) {
 	
 	var d = {chanEvt: {label: label, data: data}};
 	this.websocket.send( JSON.stringify(d) );
 };
 
+/**
+ * Change a data of the chan (you must to have the moderator of the chan)
+ *
+ * @param {Object} data		New data to change
+ */
 MpgClient.prototype.sendChanData = function(data) {
 	
 	var d = {chanData : data};
@@ -493,26 +543,38 @@ MpgClient.prototype.sendChanData = function(data) {
 
 /*
 		    ┌────────────────────────┐
-		    │   client public ask	 │
+		    │   client public ask    │
 		    └────────────────────────┘
 */
 
+/**
+ * Get all the chans of the server (asynchronus function)
+ * 
+ * @param {function} callback		Function called when the list is return (like onListChan)
+ */
 MpgClient.prototype.getChans = function (callback) {
 	
 	this.listChans = [];
-	//this.sendUserData({listenChans: true});
 	this.sendUserEvt("chan-listen", true);
 	this.onListChan = callback;
 };
 
+/**
+ * Stop listen the chan list
+ */
 MpgClient.prototype.stopListenChans = function () {
 	
-	//this.sendUserData({listenChans: false});
 	this.sendUserEvt("chan-listen", false);
 	this.onListChan = null;
 };
 
-MpgClient.prototype.joinChan = function (chanName, chanPass, callback) {
+/**
+ * Change the chan.
+ *
+ * @param {string} chanName		Name of the new chan
+ * @param {string?} chanPass		Facultative pass of the new chan
+ */
+MpgClient.prototype.joinChan = function (chanName, chanPass) {
 	
 	this.sendUserData({chan:{name: chanName, pass: chanPass}});
 };
