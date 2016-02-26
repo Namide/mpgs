@@ -15,6 +15,11 @@
 		╚═══════════════════════════╝
 */
 
+/**
+ * User, datas and listeners
+ *
+ * @constructor
+ */
 function MpgUser () {
 	
 	this.chan;
@@ -25,11 +30,23 @@ function MpgUser () {
 	this.onLeave;
 }
 
+/**
+ * Check if the user is a moderator.
+ * A moderator can kick user of the chan and change chan's datas.
+ *
+ * @return {boolean}
+ */
 MpgUser.prototype.isModerator = function () {
 	
 	return this.data.role === "moderator";
 }
 
+/**
+ * Check if the user is an admin.
+ * An admin have same power than a moderator and more.
+ *
+ * @return {boolean}
+ */
 MpgUser.prototype.isAdmin = function () {
 	
 	return this.data.role === "admin";
@@ -43,11 +60,15 @@ MpgUser.prototype.isAdmin = function () {
 		╚═══════════════════════════╝
 */
 
+/**
+ * Chan datas and user list of the chan.
+ *
+ * @constructor
+ */
 function MpgChan (id) {
 
 	this.users = [];
-	this.data = {};
-	
+	this.data = {};	
 }
 
 
@@ -57,6 +78,12 @@ function MpgChan (id) {
 		    └───────────────────┘
 */
 
+/**
+ * Push a user in the chan.
+ *
+ * @param {User} User to push in the chan
+ * @return {boolean} The user has join the chan
+ */
 MpgChan.prototype.join = function (user) {
 	
 	if (user.data.id !== undefined &&
@@ -75,6 +102,12 @@ MpgChan.prototype.join = function (user) {
 	return false;
 };
 
+/**
+ * Move a User out of the chan.
+ *
+ * @param {User} User to move out of the chan
+ * @return {boolean} The user has move out of the chan
+ */
 MpgChan.prototype.leave = function (user) {
 	
 	var i = this.users.indexOf(user);
@@ -87,11 +120,22 @@ MpgChan.prototype.leave = function (user) {
 	return false;
 };
 
+/**
+ * Replace the user list of the chan.
+ *
+ * @param {User[]} List of the new users
+ */
 MpgChan.prototype.replaceUsers = function (newUsers) {
 	
 	this.users = newUsers;
 };
 
+/**
+ * Get a User by his name.
+ *
+ * @param {string} Name of the user
+ * @return {User|null} User with this name or null
+ */
 MpgChan.prototype.getUserByName = function (name) {
 	
 	var i = this.users.length;
@@ -104,6 +148,12 @@ MpgChan.prototype.getUserByName = function (name) {
 	return null;
 };
 
+/**
+ * Get a user by his id.
+ *
+ * @param {int} Id of the user
+ * @return {User|null} User with this id or null
+ */
 MpgChan.prototype.getUserById = function (id) {
 	
 	var i = this.users.length;
@@ -116,6 +166,12 @@ MpgChan.prototype.getUserById = function (id) {
 	return null;
 };
 
+/**
+ * Remove the user by his name.
+ *
+ * @param {string} Name of the user
+ * @return {boolean} The user has been removed
+ */
 MpgChan.prototype.removeUserByName = function (name) {
 	
 	var userI = this._getUserIndexByName(name);
@@ -128,6 +184,12 @@ MpgChan.prototype.removeUserByName = function (name) {
 	return false;
 };
 
+/**
+ * Remove the user by his id.
+ *
+ * @param {string} Id of the user
+ * @return {booblean} The user has been removed
+ */
 MpgChan.prototype.removeUserById = function (id) {
 	
 	var userI = this._getUserIndexById(id);
@@ -147,6 +209,9 @@ MpgChan.prototype.removeUserById = function (id) {
 		    └───────────────────┘
 */
 
+/**
+ * @api private
+ */
 MpgChan.prototype._getUserIndexById = function (id) {
 	
 	var i = this.users.length;
@@ -159,6 +224,9 @@ MpgChan.prototype._getUserIndexById = function (id) {
 	return -1;
 };
 
+/**
+ * @api private
+ */
 MpgChan.prototype._getUserIndexByName = function (name) {
 	
 	var i = this.users.length;
@@ -181,6 +249,16 @@ MpgChan.prototype._getUserIndexByName = function (name) {
 		╚═══════════════════════════╝
 */
 
+/**
+ * Manager of the socket connection;
+ * Container of users and chan class.
+ *
+ * @param {string} URI of the socket server (example: ws://host:port/directory)
+ * @param {function} Called when socket is connected
+ * @param {function} Called when an error has occured
+ * @param {string} Lang of the client (en, fr...)
+ * @constructor
+ */
 function MpgClient(URI, onConnected, onError, lang) {
 
 	this.me;
