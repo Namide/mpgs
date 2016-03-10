@@ -34,11 +34,6 @@ Lightweight JavaScript library (server/client) for multiplayer mini games and ch
 - 0% Game client
 
 
-## Dependencies
-
-
-
-
 ## Get started
 
 [Install NodeJs and NPM](https://docs.npmjs.com/getting-started/installing-node).
