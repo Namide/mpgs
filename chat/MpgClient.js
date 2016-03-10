@@ -746,7 +746,7 @@ MpgClient.prototype._parse = function(evt)
 		return;
 	}
 	
-	console.log(msg);
+	//console.log(msg);
 	
 	// MESSAGES
 	

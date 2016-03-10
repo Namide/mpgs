@@ -2,17 +2,34 @@
 
 # Mpg
 
-Lightweight JS websocket server/client.
+Lightweight JavaScript library (server/client) for multiplayer mini games and chat.
 
-Client example of chat in the dir [chat](chat/) .
+- Version: alpha
+- TCP: Websockets
+- Server Dependencies: NodeJS, NPM, WS
+- Client Dependencies: none
+- Example: [chat](http://namide.com/chat) (jQuery)
 
 
 ## Roadmap
 
 - 90% Events
-- 100% Messages
-- 90% Chans
-- 70% Roles (user, moderator, admin)
+	- user
+	- channel
+- 80% Messages
+	- private
+	- channel
+	- server
+- 100% Multi-languages
+	- en
+	- fr
+- 90% Channels
+	- private (pass)
+	- public
+- 70% Roles
+	- user
+	- moderator
+	- admin
 - 95% Chat client
 - 0% Game client
 
@@ -20,37 +37,35 @@ Client example of chat in the dir [chat](chat/) .
 ## Dependencies
 
 
-### Server
-
-- NodeJS
-- WS
-
-
-### Client
-
-- jQuery
 
 
 ## Get started
+
+[Install NodeJs and NPM](https://docs.npmjs.com/getting-started/installing-node).
+
+
+Open your shell, go to the directory `mpgs/` and install the server dependencies with the command :
+
+```sh
+npm install
+```
 
 Configure your server with the file `config.json`.
 If you don't change it you can test this chat in local.
 
 
-### On Windows
+**On Windows**
 
-Open the file `startServer.bat`.
-
+Run the command file `startServer.bat`.  
 Open the file with your browser `chat/index.html`.
 
 
-### On Linux
+**On Linux**
 
 Open your shell, go to the directory `mpgs/` and run the server with the command :
 
 ```sh
 nodejs index.js
-
 ```
 
 Open the file with your browser `chat/index.html`
